@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.package: name=cpu-x state=present
+  become: true

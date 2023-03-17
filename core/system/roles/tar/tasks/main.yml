@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.package: name=tar state=present
+  become: true

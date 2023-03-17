@@ -1,0 +1,19 @@
+---
+- name: Playbook
+  # `ansible_playbook_hosts` can be configured under `vars` section in the inventory file
+  # or with `ansible-playbook ... -e 'ansible_playbook_hosts=VALUE' ... `
+  hosts: "{{ ansible_playbook_hosts | default('all', true) }}"
+  # Can be set to 'free'
+  # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_strategies.html#selecting-a-strategy
+  strategy: "{{ lookup('env', 'ANSIBLE_PLAYBOOK_STRATEGY') | default(omit, true) }}"
+  # Load global configuration and env specific values
+  vars_files:
+    - "{{ inventory_dir }}/resources/env-global.yml"
+    # `ansible_playbook_env` can be configured under `vars` section in the inventory file
+    # or with `ansible-playbook ... -e 'ansible_playbook_env=VALUE' ... `
+    - "{{ inventory_dir }}/resources/env-{{ ansible_playbook_env | default('default', true) }}.yml"
+  pre_tasks:
+    - name: Update PM cache
+      ansible.builtin.include_role: { name: update-pm-cache }
+  post_tasks: []
+  roles:

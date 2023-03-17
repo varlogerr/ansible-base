@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.package: name=wget state=present
+  become: true

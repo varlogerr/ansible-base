@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.package: name=mc state=present
+  become: true
