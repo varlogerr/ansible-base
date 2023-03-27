@@ -1,0 +1,9 @@
+---
+- name: Populate services facts
+  ansible.builtin.service_facts:
+
+- name: Populate distro factum data
+  ansible.builtin.include_tasks: file=inc/distro.yml
+
+- name: Populate users factum data
+  ansible.builtin.include_tasks: file=inc/users.yml

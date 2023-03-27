@@ -1,6 +1,7 @@
-# <a id="top"></a>Update package manager cache
+# <a id="top"></a>`update-pm-cache`
 
 * [Main](../../../readme.md)
+---
 
 Update package manager caches. In many cases it's very important to run this role before any package installation role is invoked. A good place would be to place it in the `pre-tasks` section:
 
@@ -8,8 +9,9 @@ Update package manager caches. In many cases it's very important to run this rol
   # ...
   pre_tasks:
     # ... no package installation roles yet
-  - include_role: { name: update-pm-cache, apply: { tags: [ always ] } }
-    tags: [always]
+    - name: Update PM cache
+      ansible.builtin.include_role: {name: update-pm-cache, apply: {tags: [always]}}
+      tags: [always]
   # ...
 ```
 

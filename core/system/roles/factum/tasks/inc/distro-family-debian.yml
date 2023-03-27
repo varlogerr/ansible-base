@@ -1,0 +1,32 @@
+---
+- name: Get UBUNTU_CODENAME (not ID=debian)
+  ansible.builtin.shell:
+    cmd: |
+      grep -i '^ubuntu_codename=' /etc/os-release | head -n 1 | cut -d= -f2- \
+      | sed -e 's/^"\([^"]*\)"$/\1/' -e "s/^'\\([^']*\\)'$/\\1/"
+  changed_when: false
+  register: factum_distro_ubuntu_codename_result
+  when:
+    - factum.distro.id not in ['debian']
+
+- name: Populate factum
+  ansible.builtin.set_fact:
+    factum: "{{ factum | combine({
+        'distro': factum.distro | combine({
+          'ubuntu_codename': ubuntu_codename,
+          'ubuntu_version': ubuntu_version,
+        }),
+      }) }}"
+  vars:
+    codename: "{{ ansible_lsb.codename | default(ansible_distribution_release) }}"
+    # for not ID=debian take UBUNTU_CODENAME value, for others map by codename
+    ubuntu_codename: "{{
+        factum_distro_ubuntu_codename_result.stdout | default(
+          factum_vars.codename_to_ubuntu_codename[codename]
+        )
+      }}"
+    # for ID=ubuntu take lsb.release value, for others map by ubuntu_codename
+    ubuntu_version: "{{ (factum.distro.id == 'ubuntu') | ternary(
+        ansible_lsb.release,
+        factum_vars.ubuntu_codename_to_version[ubuntu_codename]
+      ) }}"

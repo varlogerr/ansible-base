@@ -1,0 +1,32 @@
+---
+- name: Block
+  block:
+    - name: Populate users factum data
+      ansible.builtin.include_tasks: file=user-data.yml
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user
+
+    - name: Populate factum
+      ansible.builtin.set_fact:
+        factum: "{{ factum | combine({
+            'ctl_user': ctl_user,
+            'ctl_user_obj': users_obj[ctl_user],
+            'target_users': target_users,
+            'target_users_obj': target_users_obj,
+            'root_user_obj': users_obj.root,
+            'skel_user_obj': skel_user_obj,
+            'users': users,
+            'users_obj': users_obj,
+          }) }}"
+      vars:
+        skel_user_obj: "{{ users_obj.root | combine({
+            'home': '/etc/skel',
+          }) }}"
+        target_users_obj: "{{ users_obj | dict2items |
+          selectattr('key', 'in', target_users) | items2dict }}"
+  vars:
+    ctl_user: "{{ ansible_env.LOGNAME }}"
+    target_users: "{{ factum_target_users | default([]) | unique }}"
+    users: "{{ (target_users + [ctl_user, 'root']) | unique }}"
+    users_obj: {}

@@ -1,0 +1,20 @@
+---
+- name: Get '{{ user }}' data
+  ansible.builtin.user: name="{{ user }}"
+  register: factum_user_data_user
+  check_mode: true
+
+- name: Get '{{ user }}' group name
+  ansible.builtin.command: id -gn {{ user }}
+  register: factum_user_data_group
+  changed_when: false
+
+- name: Set '{{ user }}' data temporarily
+  ansible.builtin.set_fact:
+    users_obj: "{{ users_obj | combine({user: {
+        'gid': factum_user_data_user.group,
+        'group': factum_user_data_group.stdout,
+        'home': factum_user_data_user.home,
+        'name': user,
+        'uid': factum_user_data_user.uid,
+      }}) }}"

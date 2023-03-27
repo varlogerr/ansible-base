@@ -1,0 +1,37 @@
+---
+factum_vars:
+  ubuntu_codename_to_version: "{{ {
+      'jammy': '22.04',
+      'focal': '20.04',
+      'bionic': '18.04',
+    } | combine(factum_map.ubuntu_codename_to_version | default({})) }}"
+  codename_to_ubuntu_codename: "{{ {
+      'bullseye': 'focal',
+      'buster': 'bionic',
+    } | combine(factum_map.codename_to_ubuntu_codename | default({})) }}"
+  archmap: "{{ {
+      'x86_64': 'amd64',
+      'aarch64': 'arm64',
+    } | combine(factum_map.archmap | default({})) }}"
+
+factum:
+  distro:
+    id: ""
+    id_like: []
+    family: "{{ ansible_os_family | lower }}"
+    version: "{{ ansible_distribution_version }}"
+    major_version: "{{ ansible_distribution_major_version }}"
+    arch: "{{ factum_vars.archmap[ansible_architecture] | default('') }}"
+    ubuntu_codename: ""
+    ubuntu_version: ""
+  tz: "{{ factum_tz | default(
+      ansible_facts.date_time.tz | default('UTC', true), true
+    ) }}"
+  ctl_user: ""
+  ctl_user_obj: {}
+  target_users: []
+  target_users_obj: {}
+  root_user_obj: {}
+  skel_user_obj: {}
+  users: []
+  users_obj: {}

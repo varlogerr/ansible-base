@@ -3,6 +3,7 @@
 * [Main](../readme.md)
 ---
 * [Description](#description)
+* [Supported platforms](#supported-platforms)
 * [Directory structure](#directory-structure)
 * [Important roles](#important-roles)
 
@@ -11,6 +12,17 @@
 Ansible project core. Contains the most basic and common binaries and roles.
 
 Projects based on this core are best to be run with `core/bin` scripts instead of `ansible-playbook` command. The scripts from `core/bin` are already configured to use `ANSIBLE_ROLES_PATH` that includes all predefined directories.
+
+[To top]
+
+## Supported platforms
+
+No guaranties at all. Roles are tested with:
+
+* AlmaLinux 8.*
+* Debian 11.*
+* Linux Mint 21.*
+* Ubuntu Server 22.04
 
 [To top]
 
@@ -31,7 +43,8 @@ Projects based on this core are best to be run with `core/bin` scripts instead o
 
 ## Important roles
 
-* [Update package manager cache](system/roles/update-pm-cache/readme.md)
+* [`factum`](system/roles/factum/readme.md)
+* [`update-pm-cache`](system/roles/update-pm-cache/readme.md)
 
 [To top]
 

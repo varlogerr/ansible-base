@@ -1,0 +1,34 @@
+---
+# # Allows to extend default maps
+# factum_map:
+#   # Maps ubuntu codename to numeric version.
+#   # Example:
+#   #   jammy: '22.04'
+#   ubuntu_codename_to_version: {}
+#   # Maps debian or debian-based distro codename to
+#   # ubuntu codename.
+#   # Example:
+#   #   bullseye: focal
+#   codename_to_ubuntu_codename: {}
+#   # Maps distro architecture Intel to AMD notation.
+#   # Example:
+#   #   x86_64: amd64
+#   archmap: {}
+#
+# # When left blank falls back to the current system
+# # timezone and then to 'UTC'.
+# # Example:
+# #   EET
+# factum_tz: ''
+#
+# # The users playbooks play for.
+# # Example:
+# #   - "{{ ansible_env.LOGNAME }}"
+# #   - user1
+# factum_target_users: []
+factum_map:
+  ubuntu_codename_to_version: {}
+  codename_to_ubuntu_codename: {}
+  archmap: {}
+factum_tz:
+factum_target_users: []

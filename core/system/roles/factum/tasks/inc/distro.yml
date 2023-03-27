@@ -1,0 +1,30 @@
+---
+- name: Get ID_LIKE
+  ansible.builtin.shell:
+    cmd: |
+      grep -i '^id_like=' /etc/os-release | head -n 1 | cut -d= -f2- \
+      | sed -e 's/^"\([^"]*\)"$/\1/' -e "s/^'\\([^']*\\)'$/\\1/"
+  changed_when: false
+  register: factum_distro_id_like_result
+
+- name: Populate factum
+  ansible.builtin.set_fact:
+    factum: "{{ factum | combine({
+        'distro': factum.distro | combine({
+          'id': id,
+          'id_like': id_like,
+        }),
+      }) }}"
+  vars:
+    id: "{{ ansible_lsb.id | default(ansible_distribution) | lower }}"
+    id_like: "{{ (
+        (factum_distro_id_like_result.stdout | length > 0) | ternary(
+          (factum_distro_id_like_result.stdout | lower).split(),
+          []
+        )
+      ) + [id] | unique }}"
+
+- name: Populate distro family factum data
+  ansible.builtin.include_tasks: file=distro-family-{{ factum.distro.family }}.yml
+  when:
+    - factum.distro.family in ['debian']
