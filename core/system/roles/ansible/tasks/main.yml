@@ -1,0 +1,17 @@
+---
+- name: Block
+  block:
+    - name: Set packages state
+      ansible.builtin.set_fact: ansible_pkg_state=latest
+      when: repo_changed
+
+    - name: Install
+      ansible.builtin.package: name="{{ pkgs }}" state="{{ ansible_pkg_state }}"
+      become: true
+  vars:
+    repo_changed: >
+      (repo_ansible_state_changed | default(False))
+      or (repo_epel_state_changed | default(False))
+    ansible_pkg_state: present
+    pkgs:
+      - ansible

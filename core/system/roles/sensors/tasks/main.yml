@@ -1,0 +1,11 @@
+---
+- name: Install
+  ansible.builtin.package: name="{{ pkgs }}" state=present
+  vars:
+    os_to_pkgs:
+      _default:
+        - lm_sensors
+      debian:
+        - lm-sensors
+    pkgs: "{{ os_to_pkgs[factum.distro.family] | default(os_to_pkgs._default) }}"
+  become: true

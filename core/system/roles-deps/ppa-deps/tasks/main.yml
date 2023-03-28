@@ -1,0 +1,9 @@
+---
+- name: Install
+  ansible.builtin.package:
+    name:
+      - gpg
+    state: present
+  become: true
+  when:
+    - factum.distro.family in ['debian']

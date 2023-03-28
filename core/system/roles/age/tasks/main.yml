@@ -1,0 +1,46 @@
+---
+- name: Check current version
+  ansible.builtin.shell:
+    cmd: "{{ age_vars.bin.age }} --version | head -1"
+  args:
+    executable: /usr/bin/bash
+  register: age_installed_version
+  failed_when: false
+  changed_when: false
+
+- name: Block
+  block:
+    - name: Remove older version
+      ansible.builtin.file:
+        path: "{{ age_vars.install_dir }}"
+        state: absent
+
+    - name: Create install directory
+      ansible.builtin.file:
+        path: "{{ age_vars.install_dir | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Install
+      ansible.builtin.unarchive:
+        src: "{{ age_vars.dl_url }}"
+        dest: "{{ age_vars.install_dir | dirname }}"
+        remote_src: true
+      args:
+        # ensure the extract location is fine
+        creates: "{{ age_vars.install_dir }}"
+  become: true
+  when: age_installed_version.stdout.find(age_vars.version) | int == -1
+
+- name: Install bin symlinks
+  ansible.builtin.file:
+    src: "{{ item }}"
+    dest: "{{ dest }}"
+    state: link
+    force: true
+  vars:
+    dest: /usr/local/bin/{{ item | basename }}
+  loop: "{{ age_vars.bin.values() }}"
+  loop_control:
+    label: "{{ dest }}"
+  become: true

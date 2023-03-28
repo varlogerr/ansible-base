@@ -1,0 +1,46 @@
+---
+- name: Check current version
+  ansible.builtin.shell:
+    cmd: "{{ rage_vars.bin.rage }} --version | head -1"
+  args:
+    executable: /usr/bin/bash
+  register: rage_installed_version
+  failed_when: false
+  changed_when: false
+
+- name: Block
+  block:
+    - name: Remove older version
+      ansible.builtin.file:
+        path: "{{ rage_vars.install_dir }}"
+        state: absent
+
+    - name: Create install directory
+      ansible.builtin.file:
+        path: "{{ rage_vars.install_dir | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Install
+      ansible.builtin.unarchive:
+        src: "{{ rage_vars.dl_url }}"
+        dest: "{{ rage_vars.install_dir | dirname }}"
+        remote_src: true
+      args:
+        # ensure the extract location is fine
+        creates: "{{ rage_vars.install_dir }}"
+  become: true
+  when: rage_installed_version.stdout.find(rage_vars.version) | int == -1
+
+- name: Install bin symlinks
+  ansible.builtin.file:
+    src: "{{ item }}"
+    dest: "{{ dest }}"
+    state: link
+    force: true
+  vars:
+    dest: /usr/local/bin/{{ item | basename }}
+  loop: "{{ rage_vars.bin.values() }}"
+  loop_control:
+    label: "{{ dest }}"
+  become: true

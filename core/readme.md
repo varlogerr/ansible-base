@@ -6,6 +6,8 @@
 * [Supported platforms](#supported-platforms)
 * [Directory structure](#directory-structure)
 * [Important roles](#important-roles)
+* [Issues](#issues)
+  * [`cpu-x`](#issues-cpu-x)
 
 ## Description
 
@@ -45,6 +47,18 @@ No guaranties at all. Roles are tested with:
 
 * [`factum`](system/roles/factum/readme.md)
 * [`update-pm-cache`](system/roles/update-pm-cache/readme.md)
+
+[To top]
+
+## Issues
+
+* <a id="issues-cpu-x"></a>`cpu-x` role fails with error in AlmaLinux:
+
+  > Error: Unable to find a match: cpu-x
+
+  Currently disabled for `redhat` family.
+  
+  TODO: check the reason and other RHEL-based platforms.
 
 [To top]
 

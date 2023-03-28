@@ -1,0 +1,12 @@
+---
+- name: Install
+  ansible.builtin.include_tasks: inc/{{ task }}.yml
+  when: task
+  vars:
+    os_family_to_task:
+      debian: install-debian
+    task: "{{ os_family_to_task[factum.distro.family] | default(false) }}"
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_ansible_state_changed: "{{ repo_ansible_add_result.changed | default(false) }}"

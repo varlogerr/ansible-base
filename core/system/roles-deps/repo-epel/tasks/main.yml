@@ -1,0 +1,15 @@
+---
+- name: Block
+  block:
+    - name: Install
+      ansible.builtin.package: name=epel-release state=present
+      register: repo_epel_installation_result
+      become: true
+
+    - name: Register installation result
+      ansible.builtin.set_fact:
+        repo_epel_state_changed: "{{ repo_epel_installation_result.changed }}"
+  when: factum.distro.family in supported_os_families
+  vars:
+    supported_os_families:
+      - redhat

@@ -1,0 +1,35 @@
+---
+- name: Block
+  block:
+    - name: Create keyring directory
+      ansible.builtin.file:
+        path: "{{ keyring | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Install GPG key
+      ansible.builtin.apt_key:
+        url: "{{ item }}"
+        keyring: "{{ keyring }}"
+        state: present
+      loop: "{{ keys }}"
+      vars:
+        keys:
+          - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x6125e2a8c77f2818fb7bd15b93c4a3fd7bb9c367
+
+    - name: Add source
+      ansible.builtin.apt_repository:
+        repo: "{{ item }}"
+        state: present
+        filename: ansible
+        update_cache: true
+      register: repo_ansible_add_result
+      loop: "{{ repos }}"
+      vars:
+        codename: "{{ factum.distro.ubuntu_codename }}"
+        repos:
+          - deb [signed-by={{ keyring }}] https://ppa.launchpadcontent.net/ansible/ansible/ubuntu {{ codename }} main
+          - deb-src [signed-by={{ keyring }}] https://ppa.launchpadcontent.net/ansible/ansible/ubuntu {{ codename }} main
+  vars:
+    keyring: /etc/apt/keyrings/ansible.gpg
+  become: true

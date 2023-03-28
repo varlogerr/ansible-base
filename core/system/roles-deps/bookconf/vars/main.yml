@@ -1,0 +1,19 @@
+---
+bookconf:
+  versions:
+    #
+    ### IMAGES ###
+    #
+    # ...
+    #
+    ### TOOLS ###
+    #
+    # https://github.com/FiloSottile/age/releases
+    age: '1.1.1'
+    # https://github.com/str4d/rage/releases
+    rage: '0.9.1'
+    #
+    ### TOOLBOX ###
+    #
+    # ...
+    #

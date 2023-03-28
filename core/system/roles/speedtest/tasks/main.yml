@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.package: name=speedtest-cli state=present
+  become: true

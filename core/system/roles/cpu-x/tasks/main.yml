@@ -2,3 +2,5 @@
 - name: Install
   ansible.builtin.package: name=cpu-x state=present
   become: true
+  when:
+    - factum.distro.family not in ['redhat']
