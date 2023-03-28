@@ -4,6 +4,7 @@ declare -A OPTS
 declare -Ar DEFAULTS=(
   [branch]=master
   [dest]=.
+  [book]=false
 )
 
 print_help() {
@@ -11,11 +12,15 @@ print_help() {
     Fetch ansible project
    .
     USAGE:
-   .  fetch-project.sh [-b|--branch BRANCH] [--] [DEST]
+   .  fetch-project.sh [-b|--branch BRANCH] [--book] [--] [DEST]
    .
     DEFAULTS:
    .  BRANCH  - ${DEFAULTS[branch]}
    .  DEST    - ${DEFAULTS[dest]}
+   .
+    FLAGS:
+    --book  Force regenerate playbook even if project directory
+   .  is not empty
    .
     $(print_after_fetch)
   " | grep -v '^\s*$' | sed -e 's/^\s*//' -e 's/^$//' -e 's/^\.//'
@@ -49,6 +54,7 @@ _iife_parse_opts() {
       --            ) endopts=true ;;
       -\?|-h|--help ) print_help; exit ;;
       -b|--branch   ) shift; OPTS[branch]="${1}" ;;
+      --book        ) OPTS[book]=true ;;
       *             ) OPTS[dest]="${1}" ;;
     esac
 
@@ -150,13 +156,22 @@ _iife_vault_pass_file() {
   trap_fatal $? "Can't create DEST directory ${OPTS[dest]}"
 }
 
-[[ -z "$(ls -A "${OPTS[dest]}")" ]] || {
-  trap_fatal $? "Not empty directory ${OPTS[dest]}"
-}
-
-(set -x; cp -rf "${PKG_TMPDIR}/project"/. "${OPTS[dest]}" &>/dev/null) || {
-  trap_fatal $? "Can't move core to ${OPTS[dest]}"
-}
+if [[ -n "$(ls -A "${OPTS[dest]}")" ]]; then
+  if ${OPTS[book]}; then
+    (set -x; cp -f "${PKG_TMPDIR}/project/playbook.yml" "${OPTS[dest]}" &>/dev/null) || {
+      trap_fatal $? "Can't copy playbook to ${OPTS[dest]}"
+    }
+  else
+    trap_fatal --decore $? "
+      Not empty directory ${OPTS[dest]}.
+      Use \`--book\` flag to regenerate playbook
+    "
+  fi
+else
+  (set -x; cp -rf "${PKG_TMPDIR}/project"/. "${OPTS[dest]}" &>/dev/null) || {
+    trap_fatal $? "Can't copy project to ${OPTS[dest]}"
+  }
+fi
 
 (
   set -x
@@ -167,6 +182,8 @@ _iife_vault_pass_file() {
 ) || { log_warn "Can't remove ${TMPDIR}"; }
 
 _iife_final_info() {
+  ${OPTS[book]} && return
+
   text_decore "
    .
     $(print_after_fetch)

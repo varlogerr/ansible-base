@@ -6,6 +6,7 @@
   * [Update](#project-core-update)
 * [Project](#project)
   * [Fetch](#project-fetch)
+  * [Refetch playbook](#project-refetch-playbook)
 * [Prerequisites](#prerequisites)
   * [Control machine](#prerequisites-control-machine)
   * [Target machine](#prerequisites-target-machine)
@@ -66,6 +67,17 @@ This framework is meant for quick ansible project scaffolding.
 and follow **AFTER FETCH** instructions.
 
 Issue `{CORE_DEST}/system/bin/fetch-project.sh -h` to view **AFTER FETCH** instructions again.
+
+[To top]
+
+### <a id="project-refetch-playbook"></a>Refetch playbook
+
+* substitute `{BRANCH}` with your desired branch. Defaults to `master`.
+* substitute `{CORE_DEST}` with your desired destination directory. Defaults to PWD.
+
+```sh
+{CORE_DEST}/system/bin/fetch-project.sh --book [-b|--branch {BRANCH}] [{PROJ_DEST}]
+```
 
 [To top]
 
