@@ -34,19 +34,19 @@ No guaranties at all. Roles are tested with:
 .
 ├── bin         # Playbook binaries directory. The binaries can be symlinked to playbook
 |               # projects. See `{CORE_DEST}/system/bin/fetch-project.sh -h` for details
-├── roles       # User defined roles directory
+├── roles       # Roles directory
+├── roles-deps  # Dependency roles directory
 └── system
     ├── bin     # System binaries directory. Contains fetch-* scripts
-    ├── inc     # Used for includes and libs of any kind
-    └── roles   # Some basic roles directory, that can be used in playbooks. Not for editing
+    └── inc     # Used for includes and libs of any kind
 ```
 
 [To top]
 
 ## Important roles
 
-* [`factum`](system/roles/factum/readme.md)
-* [`update-pm-cache`](system/roles/update-pm-cache/readme.md)
+* [`factum`](roles/factum/readme.md)
+* [`update-pm-cache`](roles/update-pm-cache/readme.md)
 
 [To top]
 

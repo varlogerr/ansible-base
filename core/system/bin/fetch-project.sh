@@ -99,30 +99,30 @@ declare -r SHLIB_TMP_PATH="${PKG_TMPDIR}/core/system/inc/shell/lib/shlib.sh"
   trap_fatal $? "Can't source ${SHLIB_TMP_PATH}"
 }
 
-_iife_sys_roles_to_playbook() {
-  unset _iife_sys_roles_to_playbook
+_iife_roles_to_playbook() {
+  unset _iife_roles_to_playbook
 
-  local sys_roles_dir="${PKG_TMPDIR}/core/system/roles"
+  local roles_dir="${PKG_TMPDIR}/core/roles"
   local playbook_path="${PKG_TMPDIR}/project/playbook.yml"
 
-  local sys_roles="$(
+  local roles="$(
     set -o pipefail
 
-    find "${sys_roles_dir}" \
+    find "${roles_dir}" \
       -type f -path '*/tasks/main.yml' 2>/dev/null \
     | sort -n \
     | rev | cut -d'/' -f3 | rev
-  )" || trap_fatal $? "Can't find system roles"
+  )" || trap_fatal $? "Can't find roles"
 
-  [[ -n "${sys_roles}" ]] && {
-    declare -a sys_roles_arr
-    mapfile -t sys_roles_arr <<< "${sys_roles}"
+  [[ -n "${roles}" ]] && {
+    declare -a roles_arr
+    mapfile -t roles_arr <<< "${roles}"
 
-    printf -- '    # - %s\n' "${sys_roles_arr[@]}" | (
+    printf -- '    # - %s\n' "${roles_arr[@]}" | (
       set -x; tee -a "${playbook_path}" >/dev/null
-    ) || trap_fatal $? "Can't add system roles to the playbook"
+    ) || trap_fatal $? "Can't add roles to the playbook"
   }
-}; _iife_sys_roles_to_playbook
+}; _iife_roles_to_playbook
 
 (set -x; cp -rf "${PKG_TMPDIR}"/.editorconfig "${PKG_TMPDIR}/project" &>/dev/null) || {
   trap_fatal $? "Can't copy assets to project"

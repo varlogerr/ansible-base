@@ -25,7 +25,7 @@ factum:
     ubuntu_codename: ""
     ubuntu_version: ""
   tz: "{{ factum_tz | default(
-      ansible_facts.date_time.tz | default('UTC', true), true
+      ansible_date_time.tz | default('UTC', true), true
     ) }}"
   ctl_user: ""
   ctl_user_obj: {}

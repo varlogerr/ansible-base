@@ -1,6 +1,6 @@
 # <a id="top"></a>`update-pm-cache`
 
-* [Main](../../../readme.md)
+* [Main](../../readme.md)
 ---
 
 Update package manager caches. In many cases it's very important to run this role before any package installation role is invoked. A good place would be to place it in the `pre-tasks` section:

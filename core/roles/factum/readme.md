@@ -1,6 +1,6 @@
 # <a id="top"></a>`factum`
 
-* [Main](../../../readme.md)
+* [Main](../../readme.md)
 ---
 * [Description](#description)
 * [Factum values](#factum-values)

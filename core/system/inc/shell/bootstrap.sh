@@ -3,7 +3,7 @@ _iife_bootstrap() {
   SHELL_INCDIR="${CORE_DIR}/system/inc/shell"
 
   ANSIBLE_ROLES_PATH+="${ANSIBLE_ROLES_PATH:+:}${PROJ_DIR}/roles"
-  ANSIBLE_ROLES_PATH+=":${CORE_DIR}/roles:${CORE_DIR}/system/roles:${CORE_DIR}/system/roles-deps"
+  ANSIBLE_ROLES_PATH+=":${CORE_DIR}/roles:${CORE_DIR}/roles-deps"
 
   ANSIBLE_PLAYBOOK_ASK_VAULT_PASS=${ANSIBLE_PLAYBOOK_ASK_VAULT_PASS-true}
   ANSIBLE_PLAYBOOK_DEPS_FILE="${ANSIBLE_PLAYBOOK_DEPS_FILE:-requirements.yml}"
