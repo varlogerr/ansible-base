@@ -1,0 +1,27 @@
+---
+- name: Detect installation (nix)
+  ansible.builtin.command: "{{ nix_path }}/nix-env --version"
+  register: upgrade_nix_instance
+  failed_when: false
+  changed_when: false
+
+- name: Upgrade nix
+  block:
+    - name: Delete garbage (nix)
+      ansible.builtin.command: "{{ nix_path }}/nix-collect-garbage -d"
+      changed_when: false
+
+    - name: Update channel (nix)
+      ansible.builtin.command: "{{ nix_path }}/nix-channel --update"
+      changed_when: false
+
+    - name: Upgrade (nix)
+      ansible.builtin.command: "{{ nix_path }}/nix-env -u"
+      register: upgrade_nix_upgraded
+      changed_when: >
+        'upgrading' in upgrade_nix_upgraded.stderr
+        or 'building' in upgrade_nix_upgraded.stderr
+  vars:
+    nix_path: /nix/var/nix/profiles/default/bin
+  when: upgrade_nix_instance.rc < 1
+  become: true

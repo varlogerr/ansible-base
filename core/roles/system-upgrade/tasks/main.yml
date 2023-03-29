@@ -1,0 +1,12 @@
+---
+- name: Upgrade dist
+  ansible.builtin.include_tasks: file=inc/upgrade-dist-{{ id_like }}.yml
+  vars:
+    default_id_like: default
+    id_like_options: ['debian', 'rhel']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(default_id_like, true) }}"
+
+# - include_tasks: inc/upgrade-brew.yml
+
+- include_tasks: inc/upgrade-flatpak.yml
+- include_tasks: inc/upgrade-nix.yml

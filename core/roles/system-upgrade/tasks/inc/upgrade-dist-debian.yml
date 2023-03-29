@@ -1,0 +1,9 @@
+---
+- name: Block
+  block:
+    - name: Autoremove
+      ansible.builtin.apt: autoremove=yes
+
+    - name: Upgrade
+      ansible.builtin.apt: upgrade=dist
+  become: true

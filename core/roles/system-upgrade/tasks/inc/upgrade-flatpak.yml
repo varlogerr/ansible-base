@@ -1,0 +1,13 @@
+---
+- name: Detect installation (flatpak)
+  ansible.builtin.command: flatpak --version
+  register: upgrade_flatpak_instance
+  failed_when: false
+  changed_when: false
+
+- name: Upgrade (flatpak)
+  ansible.builtin.command: flatpak update --noninteractive
+  register: upgrade_flatpak_upgraded
+  changed_when: "'Updating' in upgrade_flatpak_upgraded.stdout"
+  when: upgrade_flatpak_instance.rc < 1
+  become: true
