@@ -54,6 +54,9 @@ factum:
     # OS architecture in AMD notation.
     # Example: 'amd64'
     arch: ""
+    # Distro codename. Only available for debian-based os family.
+    # Example: bullseye
+    codename: ""
     # Ubuntu code name for the current distro. Only available for
     # debian-based os family.
     # Example: 'focal'

@@ -1,0 +1,45 @@
+---
+- name: Block
+  block:
+  - name: Uninstall conflicting packages
+    ansible.builtin.package: name="{{ conflict_pkgs }}" state=absent
+
+  - name: Install
+    ansible.builtin.package: name="{{ pkgs }}" state="{{ docker_pkg_state }}"
+    register: docker_installation_state
+
+  - name: Start service
+    ansible.builtin.service: name={{ docker_vars.service }} state=started enabled=yes
+    register: docker_service_state
+
+  - name: Add user to docker group
+    ansible.builtin.user: name="{{ user.name }}" groups=docker append=yes
+    loop: "{{ docker_users | default([]) }}"
+    loop_control:
+      loop_var: user
+      label: "{{ user.name }}"
+  vars:
+    conflict_pkgs:
+      - podman
+      - buildah
+    pkgs:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    repo_changed: repo_docker_state_changed | default(false)
+    docker_pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+  become: true
+
+- name: Reload services facts
+  ansible.builtin.service_facts:
+  when: >
+    (docker_installation_state.changed | default(false))
+    or (docker_service_state.changed | default(false))
+
+- ansible.builtin.include_tasks: file=inc/daemon.yml
+  when: docker_insecure_registries | default([]) | length > 0
+
+- name: Restart service
+  ansible.builtin.service: name={{ docker_vars.service }} state=restarted
+  when: docker_restart_required | default(false)
+  become: true

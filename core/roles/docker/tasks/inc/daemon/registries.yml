@@ -1,0 +1,29 @@
+---
+- name: Set insecure registries prop
+  ansible.builtin.set_fact:
+    docker_insecure_registries: "{{ (
+        (docker_daemon_json['insecure-registries'] | default([])
+        + docker_insecure_registries) | unique | sort
+      ) }}"
+
+- name: Update daemon config obj
+  ansible.builtin.set_fact:
+    docker_daemon_json: "{{
+        docker_daemon_json
+        | combine({'insecure-registries': docker_insecure_registries})
+      }}"
+
+- name: Update daemon config file
+  ansible.builtin.copy:
+    content: "{{ docker_daemon_json | to_nice_json }}"
+    dest: "{{ docker_vars.daemon_json_path }}"
+    mode: "{{ docker_vars.daemon_json_file_mode }}"
+  register: docker_daemon_file_registires_update
+  become: true
+
+- name: Update daemon config file change state
+  ansible.builtin.set_fact:
+    docker_restart_required: "{{
+        (docker_restart_required | default(false))
+        or docker_daemon_file_registires_update.changed
+      }}"

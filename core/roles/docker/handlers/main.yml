@@ -1,0 +1,4 @@
+---
+- name: Docker service restart
+  ansible.builtin.service: name={{ docker_vars.service }} state=restarted
+  become: true

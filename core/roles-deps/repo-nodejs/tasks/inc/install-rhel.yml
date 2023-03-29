@@ -1,0 +1,20 @@
+---
+# from here:  https://rpm.nodesource.com/setup_18.x
+- name: Block
+  block:
+    - name: Install repo
+      ansible.builtin.template:
+        src: nodesource.repo.j2
+        dest: /etc/yum.repos.d/nodesource.repo
+        force: true
+        mode: 0644
+      vars:
+        dist_major_version: "{{ factum.distro.major_version }}"
+        nodejs_version: "{{ bookconf.versions.nodejs }}"
+      register: repo_nodejs_add_result
+
+    - name: Disable appstream module
+      ansible.builtin.command: dnf module disable -y nodejs
+      register: repo_nodejs_appstream_disable_result
+      changed_when: "'Nothing to do.' not in repo_nodejs_appstream_disable_result.stdout_lines"
+  become: true

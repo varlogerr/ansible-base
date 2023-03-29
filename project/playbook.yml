@@ -16,6 +16,9 @@
     - name: Collect factum
       ansible.builtin.include_role: {name: factum, apply: {tags: [always]}}
       tags: [always]
+    - name: Setup ansible target deps
+      ansible.builtin.include_role: {name: ansible-target-deps, apply: {tags: [always]}}
+      tags: [always]
     - name: Update PM cache
       ansible.builtin.include_role: {name: system-update-pm-cache, apply: {tags: [always]}}
       tags: [always]

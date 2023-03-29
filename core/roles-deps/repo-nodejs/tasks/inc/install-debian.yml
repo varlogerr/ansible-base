@@ -18,16 +18,18 @@
       ansible.builtin.apt_repository:
         repo: "{{ item }}"
         state: present
-        filename: ansible
+        filename: nodejs
         update_cache: true
-      register: repo_ansible_add_result
+      register: repo_nodejs_add_result
       loop: "{{ repos }}"
+      vars:
   vars:
     keys:
-      - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x6125e2a8c77f2818fb7bd15b93c4a3fd7bb9c367
-    keyring: /etc/apt/keyrings/ansible.gpg
+      - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    keyring: /etc/apt/keyrings/nodejs.gpg
     codename: "{{ factum.distro.ubuntu_codename }}"
+    version: "{{ bookconf.versions.nodejs }}"
     repos:
-      - deb [signed-by={{ keyring }}] https://ppa.launchpadcontent.net/ansible/ansible/ubuntu {{ codename }} main
-      - deb-src [signed-by={{ keyring }}] https://ppa.launchpadcontent.net/ansible/ansible/ubuntu {{ codename }} main
+      - deb [signed-by={{ keyring }}] https://deb.nodesource.com/node_{{ version }}.x {{ codename }} main
+      - deb-src [signed-by={{ keyring }}] https://deb.nodesource.com/node_{{ version }}.x {{ codename }} main
   become: true

@@ -1,0 +1,18 @@
+---
+# fix https://docs.ansible.com/ansible/2.10/user_guide/become.html#risks-of-becoming-an-unprivileged-user
+- name: Install acl
+  ansible.builtin.package: name=acl state=present
+  become: true
+
+# # work around for error:
+# # https://discourse.flathub.org/t/unacceptable-tls-certificate-ubuntu-20-04-a-solution/716
+# - name: Install latest ca-certificates
+#   ansible.builtin.package: name=ca-certificates state=latest
+#   changed_when: false
+#   become: true
+#   vars:
+#     id_like_options: ['debian']
+#     ubuntu_codename_options: ['focal']
+#   when:
+#     - factum.distro.id_like | intersect(id_like_options) | length > 0
+#     - factum.distro.ubuntu_codename in ubuntu_codename_options

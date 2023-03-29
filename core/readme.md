@@ -8,6 +8,7 @@
 * [Important roles](#important-roles)
 * [Issues](#issues)
   * [`cpu-x`](#issues-cpu-x)
+  * [`snapd`](#issues-snapd)
   * [`upgrade` brew](#issues-upgrade-brew)
   * [`upgrade` nix](#issues-upgrade-nix)
 
@@ -53,6 +54,7 @@ No guaranties at all. Roles are tested with:
 
 ## Important roles
 
+* [`ansible-target-deps`](roles/ansible-target-deps/readme.md)
 * [`factum`](roles/factum/readme.md)
 * [`system-update-pm-cache`](roles/system-update-pm-cache/readme.md)
 
@@ -62,11 +64,21 @@ No guaranties at all. Roles are tested with:
 
 * <a id="issues-cpu-x"></a>`cpu-x` role fails with error in AlmaLinux:
 
-  > Error: Unable to find a match: cpu-x
+  ```
+  Error: Unable to find a match: cpu-x
+  ```
 
   Currently disabled for `redhat` family.
   
   TODO: check the reason and other RHEL-based platforms.
+* <a id="issues-snapd"></a>`snapd` fails to work in `almalinux` (not sure about other `rhel`-likes) with error:
+
+  ```
+  error: system does not fully support snapd: cannot mount squashfs image using "squashfs": mount:
+  /tmp/syscheck-mountpoint-604945645: unknown filesystem type 'squashfs'.
+  ```
+
+  Currently disabled for `redhat` family.
 * <a id="issues-upgrade-brew"></a>`upgrade` role doesn't support `brew` yet
 * <a id="issues-upgrade-nix"></a>`upgrade` for `nix` is very memory greedy. Works fine on 4GB+ RAM, fails with 2GB
 

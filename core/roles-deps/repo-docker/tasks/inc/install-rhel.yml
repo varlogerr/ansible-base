@@ -1,0 +1,9 @@
+---
+- name: Install repo
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    force: true
+    mode: 0644
+  register: repo_docker_add_result
+  become: true

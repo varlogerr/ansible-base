@@ -13,6 +13,8 @@ bookconf:
     # https://github.com/str4d/rage/releases
     rage: '0.9.1'
     #
+    nodejs: '18'
+    #
     ### TOOLBOX ###
     #
     # ...

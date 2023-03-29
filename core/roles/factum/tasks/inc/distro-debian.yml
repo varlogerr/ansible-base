@@ -13,6 +13,7 @@
   ansible.builtin.set_fact:
     factum: "{{ factum | combine({
         'distro': factum.distro | combine({
+          'codename': codename,
           'ubuntu_codename': ubuntu_codename,
           'ubuntu_version': ubuntu_version,
         }),

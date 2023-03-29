@@ -1,0 +1,5 @@
+---
+# # users to be in docker group
+# docker_users: "{{ factum.target_users_obj.values() }}"
+docker_users: []
+docker_insecure_registries: []
