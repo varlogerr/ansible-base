@@ -1,9 +1,9 @@
 ---
 - name: Install
-  ansible.builtin.package:
-    name:
-      - gpg
-    state: present
+  ansible.builtin.package: name="{{ pkgs }}" state=present
   become: true
+  vars:
+    pkgs: ['gpg']
+    id_like_options: ['debian']
   when:
-    - factum.distro.family in ['debian']
+    - factum.distro.id_like | intersect(id_like_options) | length > 0

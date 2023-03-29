@@ -145,7 +145,7 @@ factum:
 - name: Some task that works only in debian and redhat or their derivatives
   {some_module}: {module_args}
   when:
-    - factum.distro.id_like | intersect(['debian', 'redhat']) > 0
+    - factum.distro.id_like | intersect(['debian', 'rhel']) | length > 0
 ```
 
 [To top]

@@ -2,5 +2,7 @@
 - name: Install
   ansible.builtin.package: name=cpu-x state=present
   become: true
+  vars:
+    id_unlike_options: ['rhel']
   when:
-    - factum.distro.family not in ['redhat']
+    - factum.distro.id_like | intersect(id_unlike_options) | length < 1

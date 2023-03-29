@@ -1,11 +1,10 @@
 ---
 - name: Install
-  ansible.builtin.include_tasks: inc/{{ task }}.yml
-  when: task
+  ansible.builtin.include_tasks: inc/install-{{ id_like }}.yml
   vars:
-    os_family_to_task:
-      debian: install-debian
-    task: "{{ os_family_to_task[factum.distro.family] | default(false) }}"
+    id_like_options: ['debian']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(false, true) }}"
+  when: id_like
 
 - name: Register installation result
   ansible.builtin.set_fact:

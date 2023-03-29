@@ -19,12 +19,13 @@
     id: "{{ ansible_lsb.id | default(ansible_distribution) | lower }}"
     id_like: "{{ (
         (factum_distro_id_like_result.stdout | length > 0) | ternary(
-          (factum_distro_id_like_result.stdout | lower).split(),
-          []
+          (factum_distro_id_like_result.stdout | lower).split(), []
         )
       ) + [id] | unique }}"
 
 - name: Populate distro family factum data
-  ansible.builtin.include_tasks: file=distro-family-{{ factum.distro.family }}.yml
-  when:
-    - factum.distro.family in ['debian']
+  ansible.builtin.include_tasks: file=distro-{{ id_like }}.yml
+  vars:
+    id_like_options: ['debian']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(false) }}"
+  when: id_like
