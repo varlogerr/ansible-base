@@ -10,12 +10,35 @@ bookconf:
     #
     # https://github.com/FiloSottile/age/releases
     age: '1.1.1'
+    # https://github.com/asdf-vm/asdf/releases
+    asdf: 'v0.11.3'
+    # Available versions: https://github.com/jamesob/desk/releases
+    desk: '0.6.0'
+    # https://github.com/direnv/direnv/releases
+    direnv: '2.32.2'
+    # https://github.com/junegunn/fzf/releases
+    fzf: '0.39.0'
+    # https://github.com/gokcehan/lf/releases
+    lf: r28
     # https://github.com/str4d/rage/releases
     rage: '0.9.1'
     #
+    # https://nodejs.org/en/download/releases
     nodejs: '18'
     #
     ### TOOLBOX ###
     #
-    # ...
+    # https://github.com/varlogerr/toolbox.envar2/tags
+    envar: '20230402-1'
+    # https://github.com/varlogerr/toolbox.mkconfig/tags
+    mkconfig: '20230402-1'
+    # https://github.com/varlogerr/toolbox.myssl/tags
+    myssl: '20230403-1'
     #
+  # desk and direnv hooks should be lowest in priority among
+  # those ones that change bash env
+  priority: "{{ {
+      '_default': '0200',
+      'desk'    : '0500',
+      'direnv'  : '0500',
+    } | combine(bookconf_priority) }}"

@@ -1,7 +1,14 @@
 ---
-- name: Install
-  ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
+- name: Block
+  block:
+    - name: Uninstall old version
+      ansible.builtin.package: name="{{ pkgs }}" state=absent
+      when: pkg_state in ['latest']
+
+    - name: Install
+      ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
   become: true
   vars:
     pkgs: ['nodejs']
-    pkg_state: "{{ repo_nodejs_state_changed | default(false) | ternary('latest', 'present') }}"
+    repo_changed: "{{ repo_nodejs_state_changed | default(false) }}"
+    pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"

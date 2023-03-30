@@ -1,0 +1,14 @@
+---
+## `src` with .j2 extensions are treated as template.
+## `tpl_var` key will be available as `tpl_var` in
+## templates.
+# git_extraconf_users:
+# - user: "{{ factum.users.x }}"
+#   src: "{{ inventory_dir }}/resources/git/extra.ini.j2"
+#   tpl_var: some useful value for .j2 template # optional
+# # or
+# git_extraconf_users: '{{
+#     factum.target_users | dict2items(key_name="src", value_name="user")
+#     | map("combine", {"src": inventory_dir + "/resources/git/extra.ini.j2"})
+#   }}'
+git_extraconf_users: []

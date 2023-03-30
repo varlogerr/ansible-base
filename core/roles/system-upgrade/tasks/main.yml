@@ -6,7 +6,14 @@
     id_like_options: ['debian', 'rhel']
     id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(default_id_like, true) }}"
 
-# - include_tasks: inc/upgrade-brew.yml
-
-- include_tasks: inc/upgrade-flatpak.yml
-- include_tasks: inc/upgrade-nix.yml
+- name: Upgrade non-system PMs
+  ansible.builtin.include_tasks: inc/upgrade-{{ pm_info.key }}.yml
+  with_dict: "{{ pm_map }}"
+  loop_control:
+    loop_var: pm_info
+    label: "{{ pm_info.value }}"
+  vars:
+    pm_map:
+      brew: Brew
+      flatpak: Flatpak
+      nix: Nix

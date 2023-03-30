@@ -1,5 +1,4 @@
 ---
-# from here:  https://rpm.nodesource.com/setup_18.x
 - name: Block
   block:
     - name: Install repo
@@ -10,7 +9,6 @@
         mode: 0644
       vars:
         dist_major_version: "{{ factum.distro.major_version }}"
-        nodejs_version: "{{ bookconf.versions.nodejs }}"
       register: repo_nodejs_add_result
 
     - name: Disable appstream module
@@ -18,3 +16,7 @@
       register: repo_nodejs_appstream_disable_result
       changed_when: "'Nothing to do.' not in repo_nodejs_appstream_disable_result.stdout_lines"
   become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_nodejs_state_changed: "{{ repo_nodejs_add_result.changed }}"

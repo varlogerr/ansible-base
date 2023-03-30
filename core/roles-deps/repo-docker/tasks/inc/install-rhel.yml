@@ -1,9 +1,15 @@
 ---
 - name: Install repo
   ansible.builtin.get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
+    url: https://download.docker.com/linux/{{ repo_dist_id }}/docker-ce.repo
     dest: /etc/yum.repos.d/docker-ce.repo
     force: true
     mode: 0644
   register: repo_docker_add_result
   become: true
+  vars:
+    repo_dist_id: "{{ (factum.distro.id_like | intersect(['centos']) | length > 0) | ternary('centos', 'rhel') }}"
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_docker_state_changed: "{{ repo_docker_add_result.changed }}"

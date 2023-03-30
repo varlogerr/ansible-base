@@ -1,0 +1,60 @@
+---
+- name: Block
+  block:
+    - name: Check version
+      ansible.builtin.shell:
+        cmd: "{{ bin_dir | quote }}/fzf --version | head -1"
+      args:
+        executable: /usr/bin/bash
+      register: fzf_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+        - "{{ etc_dir }}"
+
+    - name: Install
+      ansible.builtin.unarchive:
+        src: "{{ dl_url }}"
+        dest: "{{ bin_dir }}"
+        remote_src: true
+      when: fzf_installed_version.stdout.find(version) | int == -1
+
+    - name: Install etc files
+      ansible.builtin.get_url:
+        url: "{{ item.value }}"
+        dest: "{{ etc_dir }}/{{ item.key }}"
+        mode: '0644'
+      with_dict: "{{ etc_file_to_dl_url }}"
+      loop_control:
+        label: "{{ etc_dir }}/{{ item.key }}"
+
+    - name: Deploy bootstrap
+      ansible.builtin.template:
+        src: bootstrap.bash
+        dest: "{{ bash_bootstrap_path }}"
+        mode: 0644
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.fzf | default(bookconf.priority._default, true) }}-fzf.sh"
+        shell_hook_add_lines:
+          - . {{ bash_bootstrap_path | quote }}
+  become: true
+  vars:
+    install_dir: /opt/junegunn/fzf
+    bin_dir: "{{ install_dir }}/bin"
+    etc_dir: "{{ install_dir }}/etc"
+    version: "{{ fzf_version | default(bookconf.versions.fzf, true) }}"
+    dl_url: https://github.com/junegunn/fzf/releases/download/{{ version }}/fzf-{{ version }}-{{ ansible_system | lower }}_{{ factum.distro.arch }}.tar.gz
+    bash_bootstrap_path: "{{ install_dir }}/bootstrap.bash"
+    etc_file_to_dl_url:
+      completion.bash: https://raw.githubusercontent.com/junegunn/fzf/{{ version }}/shell/completion.bash
+      key-bindings.bash: https://raw.githubusercontent.com/junegunn/fzf/{{ version }}/shell/key-bindings.bash

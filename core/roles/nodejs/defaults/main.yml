@@ -1,0 +1,5 @@
+---
+# Optional, defaults to the value from bookconf.
+# Only major version segment
+# Available versions: https://nodejs.org/en/download/releases
+nodejs_version:

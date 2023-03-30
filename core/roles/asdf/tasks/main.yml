@@ -1,0 +1,38 @@
+---
+- name: Block
+  block:
+    - name: Check current version
+      ansible.builtin.shell:
+        cmd: "{{ bin | quote }} --version | head -1"
+      args:
+        executable: /usr/bin/bash
+      register: asdf_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Tool
+      ansible.builtin.include_tasks: inc/install.yml
+      when: asdf_installed_version.stdout.find(version) | int == -1
+
+    - name: Deploy bootstrap
+      ansible.builtin.template:
+        src: bootstrap.bash
+        dest: "{{ bash_bootstrap_path }}"
+        mode: 0644
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ src_dir }}/bin"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.asdf | default(bookconf.priority._default, true) }}-asdf.sh"
+        shell_hook_add_lines:
+          - . {{ bash_bootstrap_path | quote }}
+  vars:
+    install_dir: /opt/asdf-vm/asdf
+    src_dir: "{{ install_dir }}/src"
+    bin: "{{ src_dir }}/bin/asdf"
+    version: "{{ asdf_version | default(bookconf.versions.asdf, true) }}"
+    dl_url: https://github.com/asdf-vm/asdf/archive/refs/tags/{{ version }}.tar.gz
+    bash_bootstrap_path: "{{ install_dir }}/bootstrap.sh"
+  become: true

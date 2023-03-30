@@ -1,0 +1,26 @@
+---
+# source: https://antofthy.gitlab.io/software/keepout.sh.txt
+- name: Keepout
+  block:
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: '0755'
+        state: directory
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Install
+      ansible.builtin.copy: src=keepout.sh dest="{{ bin_dir }}/keepout.sh" mode=0755
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.keepout | default(bookconf.priority._default, true) }}-keepout.sh"
+  become: true
+  vars:
+    install_dir: /opt/antofthy/keepout
+    bin_dir: "{{ install_dir }}/bin"

@@ -1,0 +1,4 @@
+---
+# Optional, defaults to the value from bookconf. Don't prefix with 'v'
+# Available versions: https://github.com/varlogerr/toolbox.envar2/tags
+envar_version:

@@ -1,0 +1,7 @@
+---
+dependencies:
+  - curl
+  - envar
+  - factum-extend-brew
+  - git
+  - tar

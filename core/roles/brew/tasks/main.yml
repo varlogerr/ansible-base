@@ -1,0 +1,66 @@
+---
+- name: Main
+  block:
+    - name: User
+      ansible.builtin.include_tasks: file=inc/user.yml
+
+    - name: Install tool
+      block:
+        - name: Install
+          ansible.builtin.git:
+            repo: "{{ git_repo }}"
+            dest: "{{ install_dir }}"
+            umask: '0022'
+            force: true
+            # only check out once, update via brew itself
+            update: true
+          register: brew_installation
+
+        - name: Update homebrew
+          community.general.homebrew: path="{{ bin_dir }}" update_homebrew=true
+          when: brew_installation.changed | default(false)
+
+        - name: Patch profile
+          ansible.builtin.blockinfile:
+            path: "{{ owner.home }}/.profile"
+            block: |
+              eval $('{{ bin_dir }}/brew' shellenv)
+            marker: "{mark} Managed brew setup"
+            marker_begin: '{ #'
+            marker_end: '} #'
+            create: true
+            mode: '0644'
+
+        - name: Deploy hooks
+          ansible.builtin.template:
+            src: "{{ item }}"
+            dest: "{{ brew_home }}/{{ item }}"
+            mode: '0644'
+          loop: "{{ hooks_to_symlink.keys() }}"
+      vars:
+        owner: "{{ factum.brew_user_obj }}"
+      become: true
+      become_user: "{{ owner.name }}"
+
+    - name: Symlink hooks
+      ansible.builtin.file:
+        src: "{{ brew_home }}/{{ item.key }}"
+        dest: "{{ item.value }}"
+        state: link
+        force: true
+      with_dict: "{{ hooks_to_symlink }}"
+      loop_control:
+        label: "{{ item.value }}"
+      become: true
+  vars:
+    brew_login: "{{ factum.brew_user_obj.name }}"
+    brew_home: "{{ factum.brew_user_obj.home }}"
+    install_dir: "{{ brew_home }}/.linuxbrew"
+    bin_dir: "{{ factum.brew_user_obj.bin_dir }}"
+    account_service_dir: /var/lib/AccountsService/users
+    git_repo: https://github.com/Homebrew/brew
+    hooks_to_symlink:
+      hook.bash: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.brew | default(bookconf.priority._default, true) }}-brew.sh"
+    aliases:
+      - beer
+      - vodka

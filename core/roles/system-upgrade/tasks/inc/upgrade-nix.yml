@@ -2,7 +2,7 @@
 - name: Block
   block:
     - name: Detect installation (nix)
-      ansible.builtin.command: "{{ nix_path }}/nix-env --version"
+      ansible.builtin.command: "{{ nix_path | quote }}/nix-env --version"
       register: upgrade_nix_instance
       failed_when: false
       changed_when: false
@@ -12,15 +12,15 @@
         - name: Upgrade nix
           block:
             - name: Delete garbage (nix)
-              ansible.builtin.command: "{{ nix_path }}/nix-collect-garbage -d"
+              ansible.builtin.command: "{{ nix_path | quote }}/nix-collect-garbage -d"
               changed_when: false
 
             - name: Update channel (nix)
-              ansible.builtin.command: "{{ nix_path }}/nix-channel --update"
+              ansible.builtin.command: "{{ nix_path | quote }}/nix-channel --update"
               changed_when: false
 
             - name: Upgrade (nix)
-              ansible.builtin.command: "{{ nix_path }}/nix-env -u"
+              ansible.builtin.command: "{{ nix_path | quote }}/nix-env -u"
               register: upgrade_nix_upgraded
               changed_when: >
                 'upgrading' in upgrade_nix_upgraded.stderr

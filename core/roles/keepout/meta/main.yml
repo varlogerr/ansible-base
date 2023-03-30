@@ -1,0 +1,4 @@
+---
+dependencies:
+  - bookconf
+  - envar

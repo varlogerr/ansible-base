@@ -3,8 +3,14 @@
 declare -A OPTS
 declare -Ar DEFAULTS=(
   [branch]=master
-  [dest]=.
+  [dest]=
   [book]=false
+  [refetch]=false
+)
+
+declare -a REFETCH_FILES=(
+  ansible.cfg
+  requirements.yml
 )
 
 print_help() {
@@ -12,15 +18,19 @@ print_help() {
     Fetch ansible project
    .
     USAGE:
-   .  fetch-project.sh [-b|--branch BRANCH] [--book] [--] [DEST]
+   .  fetch-project.sh [-b|--branch BRANCH] [--book] [--] DEST
    .
     DEFAULTS:
    .  BRANCH  - ${DEFAULTS[branch]}
-   .  DEST    - ${DEFAULTS[dest]}
    .
     FLAGS:
-    --book  Force regenerate playbook even if project directory
-   .  is not empty
+    --book      Force regenerate playbook. Works only in
+   .            conjunction with \`--refetch\`
+    --refetch   Refetch some important files: $(
+      echo
+      printf -- '* %s\n' "${REFETCH_FILES[@]}" \
+      | sort -n | sed 's/^/.            /'
+    )
    .
     $(print_after_fetch)
   " | grep -v '^\s*$' | sed -e 's/^\s*//' -e 's/^$//' -e 's/^\.//'
@@ -44,6 +54,11 @@ print_after_fetch() {
   "
 }
 
+trap_fatal() {
+  echo "[fatal] ${2}" >&2
+  exit ${1}
+}
+
 _iife_parse_opts() {
   unset _iife_parse_opts
 
@@ -58,6 +73,7 @@ _iife_parse_opts() {
       -\?|-h|--help ) print_help; exit ;;
       -b|--branch   ) shift; OPTS[branch]="${1}" ;;
       --book        ) OPTS[book]=true ;;
+      --refetch     ) OPTS[refetch]=true ;;
       *             ) OPTS[dest]="${1}" ;;
     esac
 
@@ -70,12 +86,9 @@ _iife_parse_opts() {
     d="${DEFAULTS[${k}]}"
     OPTS[${k}]="${d}"
   done
-}; _iife_parse_opts "${@}"
 
-trap_fatal() {
-  echo "[fatal] ${2}" >&2
-  exit ${1}
-}
+  [[ -n "${OPTS[dest]}" ]] || trap_fatal $? "DEST is required"
+}; _iife_parse_opts "${@}"
 
 declare -r PKGNAME=ansible-base
 declare -r DL_URL="https://github.com/varlogerr/${PKGNAME}/archive/refs/heads/${OPTS[branch]}.tar.gz"
@@ -111,26 +124,44 @@ declare -r SHLIB_TMP_PATH="${PKG_TMPDIR}/core/system/inc/shell/lib/shlib.sh"
 _iife_roles_to_playbook() {
   unset _iife_roles_to_playbook
 
-  local roles_dir="${PKG_TMPDIR}/core/roles"
+  local -a roles_dirs=(
+    "${PKG_TMPDIR}/core/roles"
+    "${PKG_TMPDIR}/core/roles-brew"
+  )
   local playbook_path="${PKG_TMPDIR}/project/playbook.yml"
+  local exclude_roles="
+    ansible-target-deps
+    factum
+    system-update-pm-cache
+    unettended-upgrades-rm
+  "; exclude_roles="$(
+    grep -v '^\s*$' <<< "${exclude_roles}" | sed -e 's/^\s*//'
+  )"
 
   local roles="$(
     set -o pipefail
 
-    find "${roles_dir}" \
+    find "${roles_dirs[@]}" \
       -type f -path '*/tasks/main.yml' 2>/dev/null \
-    | sort -n \
-    | rev | cut -d'/' -f3 | rev
+    | rev | cut -d'/' -f3 | rev \
+    | sort -n | uniq \
   )" || trap_fatal $? "Can't find roles"
 
-  [[ -n "${roles}" ]] && {
-    declare -a roles_arr
-    mapfile -t roles_arr <<< "${roles}"
+  [[ -n "${roles}" ]] || return
 
-    printf -- '    # - %s\n' "${roles_arr[@]}" | (
-      set -x; tee -a "${playbook_path}" >/dev/null
-    ) || trap_fatal $? "Can't add roles to the playbook"
-  }
+  text_decore "
+    .
+    Exclude role:
+    $(sed 's/^/* /' <<< ""${exclude_roles}"")
+    .
+  " | log_info
+  roles="$(grep -vFxf <(echo "${exclude_roles}") <<< "${roles}")"
+
+  declare -a roles_arr; mapfile -t roles_arr <<< "${roles}"
+
+  printf -- '    # - %s\n' "${roles_arr[@]}" | (
+    set -x; tee -a "${playbook_path}" >/dev/null
+  ) || trap_fatal $? "Can't add roles to the playbook"
 }; _iife_roles_to_playbook
 
 (set -x; cp -rf "${PKG_TMPDIR}"/.editorconfig "${PKG_TMPDIR}/project" &>/dev/null) || {
@@ -159,22 +190,34 @@ _iife_vault_pass_file() {
   trap_fatal $? "Can't create DEST directory ${OPTS[dest]}"
 }
 
-if [[ -n "$(ls -A "${OPTS[dest]}")" ]]; then
-  if ${OPTS[book]}; then
-    (set -x; cp -f "${PKG_TMPDIR}/project/playbook.yml" "${OPTS[dest]}" &>/dev/null) || {
-      trap_fatal $? "Can't copy playbook to ${OPTS[dest]}"
+_iife_cp_to_dest() {
+  unset _iife_cp_to_dest
+
+  [[ -n "$(ls -A "${OPTS[dest]}")" ]] || {
+    (set -x; cp -rf "${PKG_TMPDIR}/project"/. "${OPTS[dest]}" &>/dev/null) || {
+      trap_fatal $? "Can't copy project to ${OPTS[dest]}"
     }
-  else
-    trap_fatal --decore $? "
-      Not empty directory ${OPTS[dest]}.
-      Use \`--book\` flag to regenerate playbook
-    "
-  fi
-else
-  (set -x; cp -rf "${PKG_TMPDIR}/project"/. "${OPTS[dest]}" &>/dev/null) || {
-    trap_fatal $? "Can't copy project to ${OPTS[dest]}"
+
+    return 0
   }
-fi
+
+  ${OPTS[refetch]} || trap_fatal --decore $? "
+    Not empty directory ${OPTS[dest]}. See refetch flags:
+   .  --refetch
+   .  --refetch --book
+  "
+
+  ${OPTS[book]} && REFETCH_FILES+=(playbook.yml)
+
+  declare -a err
+  local dest_file
+  local f; for f in "${REFETCH_FILES[@]}"; do
+    dest_file="${OPTS[dest]}/${f}"
+    (set -x; cp -f "${PKG_TMPDIR}/project/${f}" "${dest_file}" &>/dev/null) || {
+      log_warn "Can't copy to ${dest_file}"
+    }
+  done
+}; _iife_cp_to_dest
 
 (
   set -x
@@ -185,8 +228,6 @@ fi
 ) || { log_warn "Can't remove ${TMPDIR}"; }
 
 _iife_final_info() {
-  ${OPTS[book]} && return
-
   text_decore "
    .
     $(print_after_fetch)

@@ -1,0 +1,27 @@
+---
+- name: Mkconfig
+  block:
+    - name: Install
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ install_dir }}"
+        version: "{{ version }}"
+        umask: '0022'
+        force: true
+
+    - name: Symlink hook
+      ansible.builtin.file:
+        src: "{{ install_dir }}/{{ item.key }}"
+        dest: "{{ item.value }}"
+        state: link
+        force: true
+      with_dict: "{{ hooks_to_symlink }}"
+      loop_control:
+        label: "{{ item.value }}"
+  vars:
+    repo_url: https://github.com/varlogerr/toolbox.mkconfig.git
+    version: "{{ mkconfig_version | default(bookconf.versions.mkconfig, true) }}"
+    install_dir: /opt/varlog/mkconfig
+    hooks_to_symlink:
+      hook.bash: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.mkconfig | default(bookconf.priority._default, true) }}-mkconfig.sh"
+  become: true

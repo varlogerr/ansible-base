@@ -1,0 +1,27 @@
+---
+- name: Shell hook
+  block:
+    - name: Deploy
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ dest_dir }}/{{ item }}"
+        mode: '0644'
+      loop: "{{ hooks_to_symlink.keys() }}"
+      loop_control:
+        label: "{{ dest_dir }}/{{ item }}"
+
+    - name: Symlink hooks
+      ansible.builtin.file:
+        src: "{{ dest_dir }}/{{ item.key }}"
+        dest: "{{ item.value }}"
+        state: link
+        force: true
+      with_dict: "{{ hooks_to_symlink }}"
+      loop_control:
+        label: "{{ item.value }}"
+  vars:
+    dest_dir: "{{ shell_hook_dest_dir }}"
+    hooks_to_symlink:
+      hook.bash: "{{ shell_hook_symlink_dest }}"
+  become: "{{ shell_hook_become | default(true, true) }}"
+  become_user: "{{ shell_hook_become_user | default(omit, true) }}"

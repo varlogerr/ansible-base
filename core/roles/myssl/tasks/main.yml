@@ -1,0 +1,27 @@
+---
+- name: MySSL
+  block:
+    - name: Install
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ install_dir }}"
+        version: "{{ version }}"
+        umask: '0022'
+        force: true
+
+    - name: Symlink hook
+      ansible.builtin.file:
+        src: "{{ install_dir }}/{{ item.key }}"
+        dest: "{{ item.value }}"
+        state: link
+        force: true
+      with_dict: "{{ hooks_to_symlink }}"
+      loop_control:
+        label: "{{ item.value }}"
+  vars:
+    repo_url: https://github.com/varlogerr/toolbox.myssl.git
+    version: "{{ myssl_version | default(bookconf.versions.myssl, true) }}"
+    install_dir: /opt/varlog/myssl
+    hooks_to_symlink:
+      hook.bash: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.myssl | default(bookconf.priority._default, true) }}-myssl.sh"
+  become: true

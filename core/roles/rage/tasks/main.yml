@@ -1,46 +1,36 @@
 ---
-- name: Check current version
-  ansible.builtin.shell:
-    cmd: "{{ rage_vars.bin.rage }} --version | head -1"
-  args:
-    executable: /usr/bin/bash
-  register: rage_installed_version
-  failed_when: false
-  changed_when: false
-
-- name: Block
+- name: Rage
   block:
-    - name: Remove older version
-      ansible.builtin.file:
-        path: "{{ rage_vars.install_dir }}"
-        state: absent
-
-    - name: Create install directory
-      ansible.builtin.file:
-        path: "{{ rage_vars.install_dir | dirname }}"
-        state: directory
-        mode: '0755'
-
-    - name: Install
-      ansible.builtin.unarchive:
-        src: "{{ rage_vars.dl_url }}"
-        dest: "{{ rage_vars.install_dir | dirname }}"
-        remote_src: true
+    - name: Check current version
+      ansible.builtin.shell:
+        cmd: "{{ bin.rage | quote }} --version | head -1"
       args:
-        # ensure the extract location is fine
-        creates: "{{ rage_vars.install_dir }}"
-  become: true
-  when: rage_installed_version.stdout.find(rage_vars.version) | int == -1
+        executable: /usr/bin/bash
+      register: rage_installed_version
+      failed_when: false
+      changed_when: false
 
-- name: Install bin symlinks
-  ansible.builtin.file:
-    src: "{{ item }}"
-    dest: "{{ dest }}"
-    state: link
-    force: true
-  vars:
-    dest: /usr/local/bin/{{ item | basename }}
-  loop: "{{ rage_vars.bin.values() }}"
-  loop_control:
-    label: "{{ dest }}"
+    - name: Tool
+      ansible.builtin.include_tasks: inc/install.yml
+      when: rage_installed_version.stdout.find(version) | int == -1
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.rage | default(bookconf.priority._default, true) }}-rage.sh"
   become: true
+  vars:
+    install_dir: /opt/str4d/rage
+    bin_dir: "{{ install_dir }}/bin"
+    bin:
+      rage: "{{ bin_dir }}/rage"
+      rage-keygen: "{{ bin_dir }}/rage-keygen"
+      rage-mount: "{{ bin_dir }}/rage-mount"
+    arch_map:
+      _default: "{{ factum.distro.arch }}"
+      amd64: x86_64
+    arch: "{{ arch_map[factum.distro.arch] | default(arch_map._default) }}"
+    version: "{{ rage_version | default(bookconf.versions.rage, true) }}"
+    dl_url: https://github.com/str4d/rage/releases/download/v{{ version }}/rage-v{{ version }}-{{ arch }}-{{ ansible_system | lower }}.tar.gz

@@ -1,0 +1,40 @@
+---
+- name: Create download directory
+  ansible.builtin.tempfile:
+    suffix: -age
+    state: directory
+  register: age_tmp_install_dir
+
+- name: Download package
+  ansible.builtin.unarchive:
+    src: "{{ dl_url }}"
+    dest: "{{ age_tmp_install_dir.path }}"
+    remote_src: true
+
+- name: Install
+  block:
+    - name: Remove older version
+      ansible.builtin.file: path="{{ item }}" state=absent
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Install
+      ansible.builtin.copy:
+        src: "{{ age_tmp_install_dir.path }}/age/{{ item.key }}"
+        dest: "{{ item.value }}"
+        mode: '0755'
+        remote_src: true
+      with_dict: "{{ bin }}"
+  become: true
+
+- name: Remove download directory
+  ansible.builtin.file:
+    path: "{{ age_tmp_install_dir.path }}"
+    state: absent

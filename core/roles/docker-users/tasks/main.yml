@@ -1,0 +1,10 @@
+---
+- name: Add user to docker group
+  ansible.builtin.user: name="{{ user_name }}" groups=docker append=yes
+  loop: "{{ docker_users_list | default([]) }}"
+  vars:
+    user_name: "{{ user.name | default(user, true) }}"
+  loop_control:
+    loop_var: user
+    label: "{{ user_name }}"
+  become: true

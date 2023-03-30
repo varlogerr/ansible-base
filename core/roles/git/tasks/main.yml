@@ -1,0 +1,20 @@
+---
+- name: Install
+  ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
+  become: true
+  vars:
+    pkgs: ['git']
+    repo_changed: "{{ repo_git_state_changed | default(false) }}"
+    pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+
+# - include_tasks: inc/extraconf.yml
+#   vars:
+#     user: "{{ conf_item.user }}"
+#     src: "{{ conf_item.src }}"
+#     dest: "{{ user.home }}/.gitconfig-extra"
+#     tpl_var: "{{ conf_item.tpl_var | default({}) }}"
+#     src_extension: "{{ conf_item.src | splitext | last }}"
+#   loop: "{{ git_tool_extraconf_users }}"
+#   loop_control:
+#     loop_var: conf_item
+#     label: "{{ user.realname }}"

@@ -1,0 +1,4 @@
+---
+- name: Et service restart
+  ansible.builtin.service: name={{ et_vars.service }} state=restarted
+  become: true

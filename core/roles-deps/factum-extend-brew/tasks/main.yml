@@ -1,0 +1,14 @@
+---
+- name: Extend with brew user data
+  ansible.builtin.set_fact:
+    factum: "{{ factum | combine({'brew_user_obj': {
+        'gid': '',
+        'group': '',
+        'home': home,
+        'name': 'brew',
+        'uid': '',
+        'bin_dir': bin_dir,
+      }}) }}"
+  vars:
+    home: /home/linuxbrew
+    bin_dir: "{{ home }}/.linuxbrew/bin"

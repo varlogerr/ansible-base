@@ -1,0 +1,4 @@
+---
+# Optional, defaults to the value from bookconf.
+# Available versions: https://github.com/asdf-vm/asdf/releases
+asdf_version:

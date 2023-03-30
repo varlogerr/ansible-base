@@ -1,0 +1,6 @@
+---
+- name: Uninstall
+  ansible.builtin.package:
+    name: unattended-upgrades
+    state: absent
+  become: true

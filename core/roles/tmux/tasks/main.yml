@@ -1,0 +1,43 @@
+---
+- name: Block
+  block:
+    - name: Install
+      ansible.builtin.package: name=tmux state=present
+
+    - name: Create default config directory
+      ansible.builtin.file:
+        path: "{{ default_conf_path | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Deploy default config
+      ansible.builtin.template:
+        src: default.conf
+        dest: "{{ default_conf_path }}"
+        mode: '0644'
+
+    - name: Create user configs
+      ansible.builtin.blockinfile:
+        path: "{{ conf_path }}"
+        block: |
+          source-file '{{ default_conf_path }}'
+          ## Demo source user local
+          # source-file '{{ user.home }}/.tmux/configs.conf'
+        marker: "{mark} Managed initial setup"
+        marker_begin: '# {'
+        marker_end: '# }'
+        create: true
+        owner: "{{ user.name }}"
+        group: "{{ user.group }}"
+        mode: '0600'
+        insertbefore: BOF
+      loop: "{{ users }}"
+      vars:
+        conf_path: "{{ user.home }}/.tmux.conf"
+      loop_control:
+        loop_var: user
+        label: "{{ conf_path }}"
+  vars:
+    default_conf_path: /etc/tmux/default.conf
+    users: "{{ (factum.users_obj.values() | list) + [factum.skel_user_obj] }}"
+  become: true

@@ -1,0 +1,3 @@
+---
+envar_vars:
+  sys_initd: /etc/envar/init.d

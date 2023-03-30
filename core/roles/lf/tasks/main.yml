@@ -1,0 +1,51 @@
+---
+- name: Block
+  block:
+    - name: Check current version
+      ansible.builtin.shell:
+        cmd: "'{{ bin_dir | quote }}/lf' --version | head -1"
+      args:
+        executable: /usr/bin/bash
+      register: lf_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+        - "{{ etc_dir }}"
+
+    - name: Install
+      ansible.builtin.unarchive:
+        src: "{{ dl_url }}"
+        dest: "{{ bin_dir }}"
+        remote_src: true
+
+    - name: Install etc files
+      ansible.builtin.get_url:
+        url: "{{ item.value }}"
+        dest: "{{ etc_dir }}/{{ item.key }}"
+        mode: '0644'
+      with_dict: "{{ etc_file_to_dl_url }}"
+      loop_control:
+        label: "{{ etc_dir }}/{{ item.key }}"
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.lf | default(bookconf.priority._default, true) }}-lf.sh"
+        shell_hook_add_lines:
+          - . {{ etc_dir | quote }}/completion.bash
+  become: true
+  vars:
+    install_dir: /opt/gokcehan/lf
+    bin_dir: "{{ install_dir }}/bin"
+    etc_dir: "{{ install_dir }}/etc"
+    version: "{{ lf_version | default(bookconf.versions.lf, true) }}"
+    dl_url: https://github.com/gokcehan/lf/releases/download/r28/lf-{{ ansible_system | lower }}-{{ factum.distro.arch }}.tar.gz
+    etc_file_to_dl_url:
+      completion.bash: https://raw.githubusercontent.com/gokcehan/lf/{{ version }}/etc/lf.bash

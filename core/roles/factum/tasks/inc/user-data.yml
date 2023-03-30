@@ -5,7 +5,7 @@
   check_mode: true
 
 - name: Get '{{ user }}' group name
-  ansible.builtin.command: id -gn {{ user }}
+  ansible.builtin.command: id -gn {{ user | quote }}
   register: factum_user_data_group
   changed_when: false
 

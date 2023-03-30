@@ -1,0 +1,45 @@
+---
+- name: Create download directory
+  ansible.builtin.tempfile:
+    suffix: -asdf
+    state: directory
+  register: asdf_tmp_install_dir
+
+- name: Download package
+  ansible.builtin.unarchive:
+    src: "{{ dl_url }}"
+    dest: "{{ asdf_tmp_install_dir.path }}"
+    remote_src: true
+
+- name: Detect package directory
+  ansible.builtin.find:
+    paths: "{{ asdf_tmp_install_dir.path }}"
+    file_type: directory
+  register: asdf_tmp_package_dir
+
+- name: Install
+  block:
+    - name: Remove older version
+      ansible.builtin.file: path="{{ item }}" state=absent
+      loop:
+        - "{{ install_dir }}"
+        - "{{ src_dir }}"
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ src_dir }}"
+
+    - name: Install
+      ansible.builtin.copy:
+        src: "{{ (asdf_tmp_package_dir.files | first).path }}/"
+        dest: "{{ src_dir }}/"
+        mode: "{{ omit }}"
+        remote_src: true
+  become: true
+
+- name: Remove download directory
+  ansible.builtin.file:
+    path: "{{ asdf_tmp_install_dir.path }}"
+    state: absent

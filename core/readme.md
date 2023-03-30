@@ -6,10 +6,11 @@
 * [Supported platforms](#supported-platforms)
 * [Directory structure](#directory-structure)
 * [Important roles](#important-roles)
+* [TBD](#tbd)
 * [Issues](#issues)
   * [`cpu-x`](#issues-cpu-x)
   * [`snapd`](#issues-snapd)
-  * [`upgrade` brew](#issues-upgrade-brew)
+  * [`tmuxp`](#issues-tmuxp)
   * [`upgrade` nix](#issues-upgrade-nix)
 
 ## Description
@@ -57,6 +58,18 @@ No guaranties at all. Roles are tested with:
 * [`ansible-target-deps`](roles/ansible-target-deps/readme.md)
 * [`factum`](roles/factum/readme.md)
 * [`system-update-pm-cache`](roles/system-update-pm-cache/readme.md)
+* [`unettended-upgrades-rm`](roles/unettended-upgrades-rm/readme.md)
+
+[To top]
+
+## TBD
+
+* add users extraconf configuration to `git` role
+* create `git-ps1` role
+* implement `tpm` support for `tmux` role
+* create `tmux-user-config` role
+* create `tmuxp-user-config` role
+* ~~`upgrade` role doesn't support `brew`~~
 
 [To top]
 
@@ -79,7 +92,7 @@ No guaranties at all. Roles are tested with:
   ```
 
   Currently disabled for `redhat` family.
-* <a id="issues-upgrade-brew"></a>`upgrade` role doesn't support `brew` yet
+* <a id="issues-tmuxp"></a>`tmuxp` fails to work in `almalinux`, can be [installed manually with pip](https://github.com/tmux-python/tmuxp#installation)
 * <a id="issues-upgrade-nix"></a>`upgrade` for `nix` is very memory greedy. Works fine on 4GB+ RAM, fails with 2GB
 
 [To top]

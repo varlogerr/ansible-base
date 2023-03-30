@@ -1,0 +1,47 @@
+---
+- name: Create user
+  block:
+    - name: Create user
+      ansible.builtin.user:
+        name: "{{ brew_login }}"
+        system: true
+        create_home: true
+        home: "{{ brew_home }}"
+        shell: /usr/bin/bash
+        groups: ''
+      register: brew_user
+
+    - name: Get '{{ brew_user.name }}' group name
+      ansible.builtin.command: id -gn {{ brew_user.name | quote }}
+      register: brew_user_data_group
+      changed_when: false
+
+    - name: Extend factum brew user
+      ansible.builtin.set_fact:
+        factum: "{{ factum | combine({
+            'brew_user_obj': factum.brew_user_obj | combine({
+              'gid': brew_user.group,
+              'group': brew_user_data_group.stdout,
+              'uid': brew_user.uid,
+            })
+          }) }}"
+
+    - name: Allow home directory read for everyone
+      ansible.builtin.file:
+        path: "{{ factum.brew_user_obj.home }}"
+        mode: '0755'
+
+    - name: Check account service directory exists
+      ansible.builtin.stat: path="{{ account_service_dir }}"
+      register: brew_account_service_dir
+
+    - name: Make user a system account
+      ansible.builtin.ini_file:
+        path: "{{ account_service_dir }}/{{ factum.brew_user_obj.name }}"
+        section: User
+        option: SystemAccount
+        value: 'true'
+        create: true
+        mode: 0600
+      when: brew_account_service_dir.stat.exists
+  become: true

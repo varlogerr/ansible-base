@@ -11,13 +11,6 @@
   - name: Start service
     ansible.builtin.service: name={{ docker_vars.service }} state=started enabled=yes
     register: docker_service_state
-
-  - name: Add user to docker group
-    ansible.builtin.user: name="{{ user.name }}" groups=docker append=yes
-    loop: "{{ docker_users | default([]) }}"
-    loop_control:
-      loop_var: user
-      label: "{{ user.name }}"
   vars:
     conflict_pkgs:
       - podman

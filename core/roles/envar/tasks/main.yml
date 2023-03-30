@@ -1,0 +1,46 @@
+---
+- name: Block
+  block:
+    - name: Install
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ install_dir }}"
+        version: "{{ version }}"
+        force: true
+
+    - name: Create system envar directory
+      ansible.builtin.file:
+        path: "{{ envar_vars.sys_initd }}"
+        state: directory
+        mode: '0755'
+
+    - name: Patch users rc files
+      ansible.builtin.blockinfile:
+        path: "{{ rc_path }}"
+        block: |
+          . '{{ hook_path }}'
+        marker: "{mark} Managed envar setup"
+        marker_begin: '{ #'
+        marker_end: '} #'
+        create: true
+        owner: "{{ owner.name }}"
+        group: "{{ owner.group }}"
+        mode: '0644'
+      with_nested:
+        - "{{ users }}"
+        - "{{ hooks_to_rc | dict2items(key_name='hook', value_name='rc') }}"
+      vars:
+        owner: "{{ item[0] }}"
+        rc_map: "{{ item[1] }}"
+        hook_path: "{{ install_dir }}/{{ rc_map.hook }}"
+        rc_path: "{{ owner.home }}/{{ rc_map.rc }}"
+      loop_control:
+        label: "{{ rc_path }}"
+  become: true
+  vars:
+    install_dir: /opt/varlog/envar
+    repo_url: https://github.com/varlogerr/toolbox.envar2.git
+    version: "{{ envar_version | default(bookconf.versions.envar, true) }}"
+    hooks_to_rc:
+      hook.bash: .bashrc
+    users: "{{ (factum.users_obj.values() | list) + [factum.skel_user_obj] }}"

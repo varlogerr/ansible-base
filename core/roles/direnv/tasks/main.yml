@@ -1,0 +1,40 @@
+---
+- name: Direnv
+  block:
+    - name: Check version
+      ansible.builtin.shell: "{{ bin | quote }} version | head -1"
+      args:
+        executable: /usr/bin/bash
+      register: direnv_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Install
+      ansible.builtin.get_url:
+        url: "{{ dl_url }}"
+        dest: "{{ bin }}"
+        force: true
+        mode: '0755'
+      when: direnv_installed_version.stdout.find(version) | int == -1
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.direnv | default(bookconf.priority._default, true) }}-direnv.sh"
+        shell_hook_add_lines:
+          - . <({{ bin | quote }} hook bash 2>/dev/null)
+  become: true
+  vars:
+    install_dir: /opt/direnv/direnv
+    bin_dir: "{{ install_dir }}/bin"
+    bin: "{{ bin_dir }}/direnv"
+    version: "{{ direnv_version | default(bookconf.versions.direnv, true) }}"
+    dl_url: https://github.com/direnv/direnv/releases/download/v{{ version }}/direnv.{{ ansible_system | lower }}-{{ factum.distro.arch }}

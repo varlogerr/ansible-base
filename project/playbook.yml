@@ -13,6 +13,9 @@
     # or with `ansible-playbook ... -e 'ansible_playbook_env=VALUE' ... `
     - "{{ inventory_dir }}/resources/env-{{ ansible_playbook_env | default('default', true) }}.yml"
   pre_tasks:
+    - name: Uninstall unettended upgrades
+      ansible.builtin.include_role: {name: unettended-upgrades-rm, apply: {tags: [always]}}
+      tags: [always]
     - name: Collect factum
       ansible.builtin.include_role: {name: factum, apply: {tags: [always]}}
       tags: [always]

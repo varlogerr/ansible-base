@@ -3,3 +3,4 @@ docker_vars:
   daemon_json_path: /etc/docker/daemon.json
   daemon_json_file_mode: '0600'
   service: docker
+  group: docker

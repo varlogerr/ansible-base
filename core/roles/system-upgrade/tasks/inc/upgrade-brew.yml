@@ -1,21 +1,26 @@
 ---
-- name: Get user data (brew)
-  ansible.builtin.user: name="{{ brew_vars.user }}"
-  check_mode: true
-  register: upgrade_brew_user_data
-  become: true
+- name: Brew
+  block:
+    - name: Get user data (brew)
+      ansible.builtin.user: name="{{ user.name }}"
+      check_mode: true
+      register: upgrade_brew_user
+      become: true
 
-- name: Check bin directory (brew)
-  ansible.builtin.stat: path="{{ brew_vars.bin_dir }}"
-  register: upgrade_brew_bin_dir
+    - name: Check bin directory (brew)
+      ansible.builtin.stat: path="{{ bin_dir }}"
+      register: upgrade_brew_bin_dir
 
-- name: Upgrade (brew)
-  ansible.builtin.homebrew:
-    update_homebrew: true
-    upgrade_all: true
-    path: "{{ brew_vars.bin_dir }}"
+    - name: Upgrade (brew)
+      ansible.builtin.homebrew:
+        path: "{{ bin_dir }}"
+        update_homebrew: true
+        upgrade_all: true
+      when:
+        - (upgrade_brew_user.name | default(False))
+        - (upgrade_brew_bin_dir.stat.exists | default(False))
+  vars:
+    user: "{{ factum.brew_user_obj }}"
+    bin_dir: "{{ user.bin_dir }}"
   become: true
-  become_user: "{{ brew_vars.user }}"
-  when:
-    - (upgrade_brew_user_data.name | default(False))
-    - (upgrade_brew_bin_dir.stat.exists | default(False))
+  become_user: "{{ user.name }}"

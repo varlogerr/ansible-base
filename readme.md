@@ -27,14 +27,14 @@ This framework is meant for quick ansible project scaffolding.
 ### <a id="project-core-fetch"></a>Fetch
 
 * change `branch` variable value (defaults to `master`) to fetch the core from a different branch.
-* substitute `{CORE_DEST}` with your desired destination directory. Defaults to PWD.
+* substitute `{CORE_DEST}` with your desired destination directory.
 
 ```sh
 (branch=master; bash <(
   script_url=https://raw.githubusercontent.com/varlogerr/ansible-base
   script_url+=/${branch}/core/fetch.sh
   curl -fsL -o - "${script_url}" 2>/dev/null || wget -qO- "${script_url}"
-) [-b|--branch "${branch}"] [{CORE_DEST}])
+) [-b|--branch "${branch}"] {CORE_DEST})
 ```
 
 [To top]
@@ -59,10 +59,10 @@ This framework is meant for quick ansible project scaffolding.
 ### <a id="project-fetch"></a>Fetch
 
 * substitute `{BRANCH}` with your desired branch. Defaults to `master`.
-* substitute `{PROJ_DEST}` with your desired destination directory. Defaults to PWD.
+* substitute `{PROJ_DEST}` with your desired destination directory.
 
 ```sh
-{CORE_DEST}/system/bin/fetch-project.sh [-b|--branch {BRANCH}] [{PROJ_DEST}]
+{CORE_DEST}/system/bin/fetch-project.sh [-b|--branch {BRANCH}] {PROJ_DEST}
 ```
 
 and follow **AFTER FETCH** instructions.
@@ -74,10 +74,10 @@ Issue `{CORE_DEST}/system/bin/fetch-project.sh -h` to view **AFTER FETCH** instr
 ### <a id="project-refetch-playbook"></a>Refetch playbook
 
 * substitute `{BRANCH}` with your desired branch. Defaults to `master`.
-* substitute `{CORE_DEST}` with your desired destination directory. Defaults to PWD.
+* substitute `{CORE_DEST}` with your desired destination directory.
 
 ```sh
-{CORE_DEST}/system/bin/fetch-project.sh --book [-b|--branch {BRANCH}] [{PROJ_DEST}]
+{CORE_DEST}/system/bin/fetch-project.sh --book [-b|--branch {BRANCH}] {PROJ_DEST}
 ```
 
 [To top]

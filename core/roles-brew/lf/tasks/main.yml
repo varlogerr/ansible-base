@@ -1,0 +1,8 @@
+---
+- name: Install
+  ansible.builtin.homebrew:
+    path: "{{ factum.brew_user_obj.bin_dir }}"
+    name: lf
+    state: present
+  become: true
+  become_user: "{{ factum.brew_user_obj.name }}"

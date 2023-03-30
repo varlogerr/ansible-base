@@ -1,0 +1,40 @@
+---
+- name: Desk
+  block:
+    - name: Check current version
+      ansible.builtin.shell:
+        cmd: "{{ bin | quote }} --version | head -1"
+      args:
+        executable: /usr/bin/bash
+      register: desk_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Tool
+      ansible.builtin.include_tasks: inc/install.yml
+      when: desk_installed_version.stdout.find(version) | int == -1
+
+    - name: Deploy bootstrap
+      ansible.builtin.copy:
+        src: bootstrap.bash
+        dest: "{{ bash_bootstrap_path }}"
+        mode: 0644
+
+    - name: Deploy shell hook
+      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      vars:
+        shell_hook_dest_dir: "{{ install_dir }}"
+        shell_hook_bin_dir: "{{ bin_dir }}"
+        shell_hook_symlink_dest: "{{ envar_vars.sys_initd }}/{{ bookconf.priority.desk | default(bookconf.priority._default, true) }}-desk.sh"
+        shell_hook_add_lines:
+          - . {{ bash_desk_hook_path | quote }}
+          - . {{ bash_bootstrap_path | quote }}
+  become: true
+  vars:
+    install_dir: /opt/jamesob/desk
+    bin_dir: "{{ install_dir }}/bin"
+    bin: "{{ bin_dir }}/desk"
+    version: "{{ desk_version | default(bookconf.versions.desk, true) }}"
+    dl_url: https://api.github.com/repos/jamesob/desk/tarball/v{{ version }}
+    bash_desk_hook_path: "{{ install_dir }}/hook-desk.bash"
+    bash_bootstrap_path: "{{ install_dir }}/bootstrap.bash"

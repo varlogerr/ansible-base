@@ -3,7 +3,7 @@
 declare -A OPTS
 declare -A DEFAULTS=(
   [branch]=master
-  [dest]=.
+  [dest]=
 )
 
 _iife_update_defaults() {
@@ -36,12 +36,16 @@ print_help() {
     Fetch ansible project core
    .
     USAGE:
-   .  ${script_name} [-b|--branch BRANCH] [--] [DEST]
+   .  ${script_name} [-b|--branch BRANCH] [--] DEST
    .
     DEFAULTS:
    .  BRANCH  - ${DEFAULTS[branch]}
-   .  DEST    - ${DEFAULTS[dest]}
   " | grep -v '^\s*$' | sed -e 's/^\s*//' -e 's/^$//' -e 's/^\.//'
+}
+
+trap_fatal() {
+  echo "[fatal] ${2}" >&2
+  exit ${1}
 }
 
 _iife_parse_opts() {
@@ -69,12 +73,9 @@ _iife_parse_opts() {
     d="${DEFAULTS[${k}]}"
     OPTS[${k}]="${d}"
   done
-}; _iife_parse_opts "${@}"
 
-trap_fatal() {
-  echo "[fatal] ${2}" >&2
-  exit ${1}
-}
+  [[ -n "${OPTS[dest]}" ]] || trap_fatal $? "DEST is required"
+}; _iife_parse_opts "${@}"
 
 declare -r PKGNAME=ansible-base
 declare -r DL_URL="https://github.com/varlogerr/${PKGNAME}/archive/refs/heads/${OPTS[branch]}.tar.gz"

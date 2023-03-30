@@ -1,0 +1,30 @@
+---
+- block:
+  - name: install extraconf (copy)
+    copy:
+      src: "{{ src }}"
+      dest: "{{ dest }}"
+      mode: 0600
+    vars:
+      tpl_var: "{{ tpl_var }}"
+    when: src_extension != ".j2"
+
+  - name: install extraconf (template)
+    ansible.builtin.template:
+      src: "{{ src }}"
+      dest: "{{ dest }}"
+      mode: 0600
+    vars:
+      tpl_var: "{{ tpl_var }}"
+    when: src_extension == ".j2"
+
+  - name: include extraconf to gitconfig
+    ini_file:
+      path: "{{ user.home }}/.gitconfig"
+      section: include
+      option: path
+      value: "{{ dest }}"
+      mode: 0600
+      create: yes
+  become: yes
+  become_user: "{{ user.name }}"

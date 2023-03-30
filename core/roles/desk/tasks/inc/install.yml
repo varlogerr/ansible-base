@@ -1,0 +1,56 @@
+---
+- name: Create download directory
+  ansible.builtin.tempfile:
+    suffix: -desk
+    state: directory
+  register: desk_tmp_install_dir
+
+- name: Download package
+  ansible.builtin.unarchive:
+    src: "{{ dl_url }}"
+    dest: "{{ desk_tmp_install_dir.path }}"
+    remote_src: true
+
+- name: Detect package directory
+  ansible.builtin.find:
+    paths: "{{ desk_tmp_install_dir.path }}"
+    file_type: directory
+  register: desk_tmp_package_dir
+
+- name: Install
+  block:
+    - name: Remove old directories
+      ansible.builtin.file: path="{{ item }}" state=absent
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Create directories
+      ansible.builtin.file: path="{{ item }}" state=directory mode=0755
+      loop:
+        - "{{ install_dir }}"
+        - "{{ bin_dir }}"
+
+    - name: Install
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: "{{ item.mode | default('0644') }}"
+        remote_src: true
+      vars:
+        tmp_pkg_dir: "{{ (desk_tmp_package_dir.files | first).path }}"
+        src_dest:
+          - src: "{{ tmp_pkg_dir }}/desk"
+            dest: "{{ bin }}"
+            mode: '0755'
+          - src: "{{ tmp_pkg_dir }}/shell_plugins/bash/desk"
+            dest: "{{ bash_desk_hook_path }}"
+      loop: "{{ src_dest }}"
+      loop_control:
+        label: "{{ item.dest }}"
+  become: true
+
+- name: Delete download directory
+  ansible.builtin.file:
+    path: "{{ desk_tmp_install_dir.path }}"
+    state: absent
