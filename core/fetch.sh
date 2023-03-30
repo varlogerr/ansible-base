@@ -6,14 +6,22 @@ declare -A DEFAULTS=(
   [dest]=.
 )
 
-SELF_REALPATH="$(realpath -m -- "${0}" 2>/dev/null)"
-SELF_BINDIR="$(dirname -- "${SELF_REALPATH}" 2>/dev/null)"
+_iife_update_defaults() {
+  unset _iife_update_defaults
 
-# Update the default destination directory if the script is a real file
-: \
-&& [[ (-f "${SELF_REALPATH}" && -d "${SELF_BINDIR}") ]] \
-&& [[ "$(rev <<< "${SELF_BINDIR}" | cut -d'/' -f2 | rev)" == system ]] \
-&& DEFAULTS[dest]="$(realpath -- "$(dirname -- "${SELF_REALPATH}")/../..")"
+  local self_realpath; self_realpath="$(realpath -m -- "${0}" 2>/dev/null)"
+  local self_bindir; self_bindir="$(dirname -- "${self_realpath}" 2>/dev/null)"
+
+  # Update the default destination directory if:
+  # * the current script is a real file
+  # * fetch-project.sh file is in the same directory
+  # * directory path to the current script ends with '/system/bin'
+  : \
+  && test -f "${self_realpath}" \
+  && test -f "${self_bindir}/fetch-project.sh" \
+  && grep -q '\/system\/bin$' <<< "${self_bindir}" \
+  && DEFAULTS[dest]="$(realpath -m -- "${self_bindir}/../..")"
+}; _iife_update_defaults
 
 declare -r DEFAULTS
 

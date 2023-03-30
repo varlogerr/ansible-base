@@ -31,8 +31,9 @@ This framework is meant for quick ansible project scaffolding.
 
 ```sh
 (branch=master; bash <(
-  dl_url=https://raw.githubusercontent.com/varlogerr/ansible-base/${branch}/core/fetch.sh
-  curl -fsL -o - "${dl_url}" 2>/dev/null || wget -qO- "${dl_url}"
+  script_url=https://raw.githubusercontent.com/varlogerr/ansible-base
+  script_url+=/${branch}/core/fetch.sh
+  curl -fsL -o - "${script_url}" 2>/dev/null || wget -qO- "${script_url}"
 ) [-b|--branch "${branch}"] [{CORE_DEST}])
 ```
 

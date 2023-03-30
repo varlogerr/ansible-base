@@ -29,9 +29,10 @@ print_help() {
 print_after_fetch() {
   echo "
     AFTER FETCH:
-    * symlink desired core binaries to project \`{PROJ_DIR}/bin\` directory
+    * symlink desired core binaries to project \`{PROJ_DIR}/bin\` directory:
    .  ln -sf '{CORE_DIR}/bin/{SRC_BIN}.sh' '{PROJ_DIR}/bin/{DEST_BIN}.sh'
-    * symlink desired core system binaries to project \`{PROJ_DIR}/bin\` directory
+    * (optional, nice for development) symlink fetch-core.sh script to project
+   .  \`{PROJ_DIR}/system/bin\` directory:
    .  ln -sf '{CORE_DIR}/system/bin/fetch-core.sh' '{PROJ_DIR}/system/bin/fetch-core.sh'
     * review and edit configurations:
    .  * \`{PROJ_DIR}/@dev.sh\`
