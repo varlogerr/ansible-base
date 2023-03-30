@@ -5,7 +5,7 @@
     ansible.builtin.package: name="{{ conflict_pkgs }}" state=absent
 
   - name: Install
-    ansible.builtin.package: name="{{ pkgs }}" state="{{ docker_pkg_state }}"
+    ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
     register: docker_installation_state
 
   - name: Start service
@@ -26,8 +26,8 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-    repo_changed: repo_docker_state_changed | default(false)
-    docker_pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+    repo_changed: "{{ repo_docker_state_changed | default(false) }}"
+    pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
   become: true
 
 - name: Reload services facts

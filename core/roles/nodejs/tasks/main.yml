@@ -1,8 +1,7 @@
 ---
 - name: Install
-  ansible.builtin.package: name="{{ pkgs }}" state="{{ nodejs_pkg_state }}"
+  ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
   become: true
   vars:
     pkgs: ['nodejs']
-    repo_changed: repo_nodejs_state_changed | default(false)
-    nodejs_pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+    pkg_state: "{{ repo_nodejs_state_changed | default(false) | ternary('latest', 'present') }}"

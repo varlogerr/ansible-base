@@ -1,10 +1,11 @@
 ---
 - name: Install
-  ansible.builtin.package: name="{{ pkgs }}" state="{{ ansible_pkg_state }}"
+  ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
   become: true
   vars:
     pkgs: ['ansible']
-    repo_changed: >
-      (repo_ansible_state_changed | default(false))
-      or (repo_epel_state_changed | default(false))
-    ansible_pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+    repo_changed: "{{
+        (repo_ansible_state_changed | default(false))
+        or (repo_epel_state_changed | default(false))
+      }}"
+    pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"

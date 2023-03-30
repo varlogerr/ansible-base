@@ -1,4 +1,6 @@
 ---
 - name: Install
-  ansible.builtin.package: name=speedtest-cli state=present
+  ansible.builtin.package: name=speedtest-cli state="{{ pkg_state }}"
+  vars:
+    pkg_state: "{{ (repo_epel_state_changed | default(false)) | ternary('latest', 'present') }}"
   become: true
