@@ -1,10 +1,21 @@
 #!/usr/bin/env bash
 
 declare -A OPTS
-declare -Ar DEFAULTS=(
+declare -A DEFAULTS=(
   [branch]=master
   [dest]=.
 )
+
+SELF_REALPATH="$(realpath -m -- "${0}" 2>/dev/null)"
+SELF_BINDIR="$(dirname -- "${SELF_REALPATH}" 2>/dev/null)"
+
+# Update the default destination directory if the script is a real file
+: \
+&& [[ (-f "${SELF_REALPATH}" && -d "${SELF_BINDIR}") ]] \
+&& [[ "$(rev <<< "${SELF_BINDIR}" | cut -d'/' -f2 | rev)" == system ]] \
+&& DEFAULTS[dest]="$(realpath -- "$(dirname -- "${SELF_REALPATH}")/../..")"
+
+declare -r DEFAULTS
 
 print_help() {
   local script_path="${0}"

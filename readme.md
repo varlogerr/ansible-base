@@ -41,7 +41,7 @@ This framework is meant for quick ansible project scaffolding.
 ### <a id="project-core-update"></a>Update
 
 * substitute `{BRANCH}` with your desired branch. Defaults to `master`.
-* substitute `{CORE_DEST}` with your desired destination directory. Defaults to PWD.
+* substitute `{CORE_DEST}` with your desired destination directory. Defaults to the actual core directory.
 
 ```sh
 {CORE_DEST}/system/bin/fetch-core.sh [-b|--branch {BRANCH}] [{CORE_DEST}]
