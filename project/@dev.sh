@@ -11,11 +11,11 @@
 #   * `-n` option is not applicable for sub-environment
 
 
-# Configure env name
-ENVAR_NAME=playbook
-
 declare CURDIR; CURDIR="$(realpath -- "$(dirname -- "${BASH_SOURCE[0]}")")"
 envar_source -- "${CURDIR}/.envar"
+
+# Configure env name
+ENVAR_NAME="${ENVAR_NAME:+${ENVAR_NAME}:}$(basename -- "${CURDIR}")"
 
 # # Playbook configuration variables:
 # export ANSIBLE_PLAYBOOK_ASK_VAULT_PASS=true

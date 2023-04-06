@@ -14,6 +14,7 @@ Basic ansible project.
 ```
 .
 ├── .envar      # Envar directory
+├── .etc        # Some settings files
 ├── .inc        # Can be used for includes and libs for binaries
 ├── bin         # Playbook binaries directory. The binaries from `{CORE_DEST}/bin` can
 |               # be symlinked here. See `{CORE_DEST}/system/bin/fetch-project.sh -h`
@@ -26,6 +27,7 @@ Basic ansible project.
 ├── ansible.cfg
 ├── hosts.yml
 ├── playbook.yml
+├── project.conf  # Project configuration file
 ├── readme.md
 ├── requirements.yml
 └── vault.pass  # Vault password file to be used

@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-CORE_BINDIR="$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")"
+CORE_HOME="${CORE_HOME-$(realpath -- "$(dirname -- "$(realpath -- "${0}")")/..")}"
+PROJ_HOME="${PROJ_HOME-$(realpath -- "$(dirname -- "${0}")/..")}"
+export CORE_HOME PROJ_HOME
 
-# PROJ_BINDIR must be exported in order to affect play.sh
-PROJ_BINDIR="${PROJ_BINDIR-$(realpath -- "$(dirname -- "${0}")")}"
-ANSIBLE_PLAYBOOK_STRATEGY=free
-export PROJ_BINDIR ANSIBLE_PLAYBOOK_STRATEGY
-
-"${CORE_BINDIR}/play.sh"
+"${CORE_HOME}/bin/play.sh"

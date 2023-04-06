@@ -1,49 +1,33 @@
 #!/usr/bin/env bash
 
-PROJ_BINDIR="$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")"
+#
+# TODO:
+# * make the file executable in order to be run it
+# * modify the file up to your needs
+#
 
-CORE_BINDIR=""
-CORE_DIR=""
-_iife_detect_core_dirs() {
-  # detect first found symlink real directory.
-  # it's assumed that PROJ_BINDIR contains symlinks
-  # to binaries from CORE_BINDIR and no other symlinks
-  local found_symlink; found_symlink="$(
-    find "${PROJ_BINDIR}" -name '*.sh' -type l \
-      | sort -n | head -n 1
-  )"
-  [[ -n "${found_symlink}" ]] || {
-    echo "[fatal] Can't detect symlink to core binary" >&2
-    return 1
+{ # Define variables required by bootstrap.sh
+  PROJ_HOME="${PROJ_HOME-$(realpath -- "$(dirname -- "${0}")/.." 2>/dev/null)}" || {
+    echo "[fatal] Can't detect PROJ_HOME" >&2
+    exit
   }
-
-  CORE_BINDIR="$(dirname -- "$(realpath -- "${found_symlink}" 2>/dev/null)")" || {
-    echo "[fatal] Can't detect CORE_BINDIR" >&2
-    return 1
+  CORE_HOME="${CORE_HOME-$(cd "${PROJ_HOME}" 2>/dev/null && realpath -- "$(
+    set -o pipefail
+    grep -- '^\s*core_home\s*=' project.conf 2>/dev/null \
+    | head -n 1 | cut -d= -f2- | sed -e 's/^\s*//' -e 's/\s*$//'
+  )" 2>/dev/null)}" || {
+    echo "[fatal] Can't detect core_home in ${PROJ_HOME}/project.conf" >&2
+    exit
   }
-  CORE_DIR="$(realpath -- "${CORE_BINDIR}/.." 2>/dev/null)"  || {
-    echo "[fatal] Can't detect CORE_DIR" >&2
-    return 1
-  }
-}; _iife_detect_core_dirs && unset _iife_detect_core_dirs || {
-  exit 1
+  declare -r CORE_HOME PROJ_HOME
 }
 
-declare -r CORE_BINDIR CORE_DIR PROJ_BINDIR
-export PROJ_BINDIR
+{ # Source shlib.sh to have access to it's functions and bootstrap.sh to enrich environment
+  . "${CORE_HOME}/system/inc/shell/lib/shlib.sh"
+  . "${CORE_HOME}/system/inc/shell/bootstrap.sh"
+}
 
-. "${CORE_DIR}/system/inc/shell/bootstrap.sh"
-
-#
-# Do whatever you're supposed to do
-#
-
-# just a demo
-text_decore "
- .
-  CORE_BINDIR         : ${CORE_BINDIR}
-  CORE_DIR            : ${CORE_DIR}
-  PROJ_BINDIR         : ${PROJ_BINDIR}
-  ANSIBLE_ROLES_PATH  : ${ANSIBLE_ROLES_PATH}
- .
-" | log_info
+{ # Export vars for play.sh and execute it
+  export CORE_HOME PROJ_HOME
+  "${CORE_HOME}/bin/play.sh" "${@}"
+}
