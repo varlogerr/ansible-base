@@ -1,8 +1,13 @@
 ---
-- name: Install
-  ansible.builtin.package: name=tmuxp state=present
-  become: true
+- name: Tmuxp
+  block:
+    - name: Install
+      ansible.builtin.package: name=tmuxp state=present
+      when: factum.distro.id_like | intersect(pip_id_like_options) | length < 1
+      become: true
+
+    - name: Install with pip
+      ansible.builtin.include_role: name=pip-tmux
+      when: factum.distro.id_like | intersect(pip_id_like_options) | length > 0
   vars:
-    id_like_options: ['debian']
-  when:
-    - factum.distro.id_like | intersect(id_like_options) | length > 0
+    pip_id_like_options: ['rhel']

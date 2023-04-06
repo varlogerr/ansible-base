@@ -10,8 +10,8 @@
 * [Issues](#issues)
   * [`cpu-x`](#issues-cpu-x)
   * [`snapd`](#issues-snapd)
-  * [`tmuxp`](#issues-tmuxp)
   * [`upgrade` nix](#issues-upgrade-nix)
+  * ~~[`tmuxp`](#issues-tmuxp)~~
 
 ## Description
 
@@ -92,7 +92,9 @@ No guaranties at all. Roles are tested with:
   ```
 
   Currently disabled for `redhat` family.
-* <a id="issues-tmuxp"></a>`tmuxp` fails to work in `almalinux`, can be [installed manually with pip](https://github.com/tmux-python/tmuxp#installation)
+* ~~<a id="issues-tmuxp"></a>`tmuxp` fails to work in `almalinux`, can be [installed manually with pip](https://github.com/tmux-python/tmuxp#installation)~~
+
+  (fixed with installation via pip)
 * <a id="issues-upgrade-nix"></a>`upgrade` for `nix` is very memory greedy. Works fine on 4GB+ RAM, fails with 2GB
 
 [To top]

@@ -1,0 +1,4 @@
+---
+- name: Install
+  ansible.builtin.pip: name=tmuxp state=present
+  become: true
