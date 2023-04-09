@@ -1,4 +1,4 @@
 ---
 dependencies:
-  - repo-remi
-  - repo-et
+  - repo.remi
+  - repo.et

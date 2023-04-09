@@ -1,0 +1,12 @@
+---
+- name: Install
+  ansible.builtin.copy:
+    src: google-chrome.repo
+    dest: /etc/yum.repos.d/google-chrome.repo
+    mode: 0644
+  register: repo_chrome_add_result
+  become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_chrome_state_changed: "{{ repo_chrome_add_result.changed }}"

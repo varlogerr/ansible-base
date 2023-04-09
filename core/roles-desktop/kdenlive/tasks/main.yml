@@ -1,0 +1,8 @@
+---
+- name: Install
+  ansible.builtin.package: name="{{ pkgs }}" state="{{ pkg_state }}"
+  vars:
+    pkgs: ['kdenlive']
+    repo_changed: "{{ (repo_kdenlive_state_changed | default(false)) }}"
+    pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
+  become: true

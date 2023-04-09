@@ -1,0 +1,38 @@
+---
+- name: Block
+  block:
+    - name: Check list file exists
+      ansible.builtin.stat: path="{{ list_file_path }}"
+      register: add_ppa_list_file
+
+    - name: Create keyring directory (repo={{ add_ppa_repo_name }})
+      ansible.builtin.file:
+        path: "{{ add_ppa_keyring | dirname }}"
+        state: directory
+        mode: '0755'
+
+    - name: Install GPG key (repo={{ add_ppa_repo_name }})
+      ansible.builtin.apt_key:
+        url: "{{ item }}"
+        keyring: "{{ add_ppa_keyring }}"
+        state: present
+      loop: "{{ add_ppa_keys }}"
+
+    - name: Add source (repo={{ add_ppa_repo_name }})
+      ansible.builtin.copy:
+        content: "{{ add_ppa_repos | default([], true) | join('\n') }}{{ '\n' }}"
+        dest: "{{ list_file_path }}"
+        mode: '0644'
+      register: add_ppa_result
+      when: not ((add_ppa_once | default(false)) and add_ppa_list_file.stat.exists)
+
+    - name: Update cache (repo={{ add_ppa_repo_name }})
+      ansible.builtin.package: update_cache=yes
+      when: add_ppa_result.changed | default(false)
+  vars:
+    list_file_path: /etc/apt/sources.list.d/{{ add_ppa_repo_name }}.list
+  become: true
+
+- name: Register installation result (repo={{ add_ppa_repo_name }})
+  ansible.builtin.set_fact:
+    "repo_{{ add_ppa_var_marker | default(add_ppa_repo_name, true) }}_state_changed": "{{ add_ppa_result.changed | default(false) }}"

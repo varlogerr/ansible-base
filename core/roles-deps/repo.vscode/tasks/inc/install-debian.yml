@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    arch: "{{ factum.distro.arch }}"
+    # add_ppa vars
+    add_ppa_repo_name: vscode
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://packages.microsoft.com/keys/microsoft.asc
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }} arch={{ arch }}] https://packages.microsoft.com/repos/code stable main
+    add_ppa_once: true

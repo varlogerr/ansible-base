@@ -7,3 +7,6 @@
 
 - name: Populate users factum data
   ansible.builtin.include_tasks: file=inc/users.yml
+
+- name: Populate book factum data
+  ansible.builtin.include_tasks: file=inc/book.yml

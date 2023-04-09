@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    arch: "{{ factum.distro.arch }}"
+    # add_ppa vars
+    add_ppa_repo_name: skype
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://repo.skype.com/data/SKYPE-GPG-KEY
+    add_ppa_repos:
+      - deb [arch={{ arch }} signed-by={{ add_ppa_keyring }}] https://repo.skype.com/deb stable main
+    add_ppa_once: true

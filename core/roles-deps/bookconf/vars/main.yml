@@ -20,6 +20,8 @@ bookconf:
     fzf: '0.39.0'
     # https://github.com/gokcehan/lf/releases
     lf: r28
+    # https://downloads.nomachine.com/download/?id=6
+    nomachine: '8.4.2_1'
     # https://github.com/str4d/rage/releases
     rage: '0.9.1'
     #

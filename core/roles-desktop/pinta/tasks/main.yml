@@ -1,0 +1,9 @@
+---
+# installing from ppa requires mono
+# https://www.pinta-project.com/howto/installing-pinta#install-pinta-from-pinta-maintainers-ppa-repository-using-terminal-for-advanced-users
+- name: Install
+  community.general.flatpak:
+    remote: "{{ flathub_vars.remote }}"
+    name: com.github.PintaProject.Pinta
+    state: present
+  become: true

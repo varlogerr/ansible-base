@@ -1,0 +1,7 @@
+---
+- name: Install
+  community.general.flatpak:
+    remote: "{{ flathub_vars.remote }}"
+    name: org.gimp.GIMP
+    state: present
+  become: true

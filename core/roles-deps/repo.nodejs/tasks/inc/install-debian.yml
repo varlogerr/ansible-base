@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    codename: "{{ factum.distro.ubuntu_codename }}"
+    # add_ppa vars
+    add_ppa_repo_name: nodejs
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }}] https://deb.nodesource.com/node_{{ version }}.x {{ codename }} main
+      - deb-src [signed-by={{ add_ppa_keyring }}] https://deb.nodesource.com/node_{{ version }}.x {{ codename }} main

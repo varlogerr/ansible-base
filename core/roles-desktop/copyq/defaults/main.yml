@@ -1,0 +1,6 @@
+---
+# # users to autostart copyq
+# copyq_autostarters: "{{ factum.target_users_obj.values() }}"
+# # or
+# copyq_autostarters: "{{ factum.target_users }}"
+copyq_autostarters: []

@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    codename: "{{ factum.distro.ubuntu_codename }}"
+    # add_ppa vars
+    add_ppa_repo_name: deluge
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x8eed8fb4a8e6da6dfdf0192bc5e6a5ed249ad24c
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/deluge-team/stable/ubuntu {{ codename }} main
+      - deb-src [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/deluge-team/stable/ubuntu {{ codename }} main

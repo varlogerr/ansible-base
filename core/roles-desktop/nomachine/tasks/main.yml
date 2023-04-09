@@ -1,0 +1,25 @@
+---
+- name: Nomachine
+  block:
+    - name: Check current version
+      ansible.builtin.shell:
+        cmd: /usr/NX/bin/nxserver --version | head -n 1 | rev | cut -d' ' -f1 | rev
+      args:
+        executable: /usr/bin/bash
+      register: nomachine_installed_version
+      failed_when: false
+      changed_when: false
+
+    - name: Install
+      ansible.builtin.include_tasks: file=inc/install-{{ id_like }}.yml
+      vars:
+        installed_version: "{{ nomachine_installed_version.stdout | default('0.0.0', true) }}"
+        desired_version: "{{ version.split('_') | first }}"
+      when:
+        - installed_version is version(desired_version, '<')
+  vars:
+    version: "{{ nomachine_version | default(bookconf.versions.nomachine, true) }}"
+    installer_prefix: https://download.nomachine.com/download/{{ version | splitext | first }}/Linux/nomachine_{{ version }}
+    id_like_options: ['debian', 'rhel']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(false, true) }}"
+  when: id_like

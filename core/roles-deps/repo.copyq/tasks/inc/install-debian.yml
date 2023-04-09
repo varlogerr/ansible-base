@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    codename: "{{ factum.distro.ubuntu_codename }}"
+    # add_ppa vars
+    add_ppa_repo_name: copyq
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x407dcf2158b84056d11bbc944f0b2f06aa07d22f
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/hluk/copyq/ubuntu {{ codename }} main
+      - deb-src [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/hluk/copyq/ubuntu {{ codename }} main

@@ -1,0 +1,34 @@
+---
+- name: Detect project home
+  ansible.builtin.stat:
+    path: "{{ inventory_dir }}"
+  register: factum_inventory_dir
+  delegate_to: localhost
+
+- name: Populate book factum
+  block:
+    - name: Get project home data
+      ansible.builtin.shell:
+        cmd: |
+          p="$(
+            set -o pipefail
+            grep '^\s*core_home\s*=' {{ proj_home | quote }}/project.conf 2>/dev/null \
+            | head -n 1 | cut -d= -f2- | sed -e 's/^\s*//' -e 's/\s*$//'
+          )" && realpath -m --relative-base {{ proj_home | quote }} -- "${p}"
+        executable: /usr/bin/bash
+      register: factum_core_home_result
+      changed_when: false
+      failed_when: false
+      delegate_to: localhost
+
+    - name: Populate factum
+      ansible.builtin.set_fact:
+        factum: "{{ factum | combine({
+            'book': factum.book | combine({
+              'core_home': factum_core_home_result.stdout | default('', true),
+              'proj_home': proj_home | default('', true),
+            })
+          }) }}"
+  vars:
+    proj_home: "{{ factum_inventory_dir.stat.path }}"
+  when: factum_inventory_dir.stat.exists

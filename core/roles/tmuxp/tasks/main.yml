@@ -7,7 +7,7 @@
       become: true
 
     - name: Install with pip
-      ansible.builtin.include_role: name=pip-tmuxp
+      ansible.builtin.include_role: name=pip.tmuxp
       when: factum.distro.id_like | intersect(pip_id_like_options) | length > 0
   vars:
     pip_id_like_options: ['rhel']

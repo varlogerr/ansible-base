@@ -1,0 +1,16 @@
+---
+- name: Install
+  flatpak:
+    remote: "{{ flathub_vars.remote }}"
+    name: com.viber.Viber
+    state: present
+  become: true
+
+- name: Deploy app autostart
+  ansible.builtin.include_role: name=partial.deploy-app-autostart
+  vars:
+    desktop_app_autostart_file: files/viber.desktop
+    desktop_app_autostart_user: "{{ item }}"
+  loop: "{{ viber_autostarters | default([], true) }}"
+  loop_control:
+    label: "{{ (factum.users_obj[item] | default(item)).name }}"

@@ -1,0 +1,13 @@
+---
+# # Leave blank to not apply any configs.
+# # Conffiles that end with '.j2' extension will be treated
+# # as templates and they you can pass variables to them
+# # that will be available in `tpl_vars` variable
+# mpv_conffile:
+#   src: "{{ factum.book.core_home }}/resources/conf/mpv/hq.conf"
+# # or
+# mpv_conffile:
+#   src: "/some-path-to-file.j2"
+#   tpl_vars: # optional
+#     var1: val1
+mpv_conffile: {}

@@ -13,7 +13,7 @@
             umask: '0022'
             force: true
             # only check out once, update via brew itself
-            update: true
+            update: false
           register: brew_installation
 
         - name: Update homebrew

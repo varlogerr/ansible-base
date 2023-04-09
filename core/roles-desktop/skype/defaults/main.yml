@@ -1,0 +1,6 @@
+---
+# # users to autostart skype
+# skype_autostarters: "{{ factum.target_users_obj.values() }}"
+# # or
+# skype_autostarters: "{{ factum.target_users }}"
+skype_autostarters: []

@@ -1,0 +1,14 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    repo_dist_id: "{{ (factum.distro.id_like | intersect(['ubuntu']) | length > 0) | ternary('ubuntu', factum.distro.id) }}"
+    codename: "{{ (repo_dist_id in ['ubuntu']) | ternary(factum.distro.ubuntu_codename, factum.distro.codename) }}"
+    arch: "{{ factum.distro.arch }}"
+    # add_ppa vars
+    add_ppa_repo_name: virtualbox
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    add_ppa_repos:
+      - deb [arch={{ arch }} signed-by={{ add_ppa_keyring}}] https://download.virtualbox.org/virtualbox/debian {{ codename }} contrib

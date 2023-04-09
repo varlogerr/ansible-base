@@ -10,6 +10,7 @@
 * [Issues](#issues)
   * [`cpu-x`](#issues-cpu-x)
   * [`snapd`](#issues-snapd)
+  * [`phpstorm`](#issues-phpstorm)
   * [`upgrade` nix](#issues-upgrade-nix)
   * ~~[`tmuxp`](#issues-tmuxp)~~
 
@@ -69,6 +70,9 @@ No guaranties at all. Roles are tested with:
 * implement `tpm` support for `tmux` role
 * create `tmux-user-config` role
 * create `tmuxp-user-config` role
+* validate desktop roles work in `rhel` and `debian`
+* add `max-watches` as a dependency to vscode
+* add `vscode-users-exts` functionality
 * ~~`upgrade` role doesn't support `brew`~~
 
 [To top]
@@ -81,7 +85,7 @@ No guaranties at all. Roles are tested with:
   Error: Unable to find a match: cpu-x
   ```
 
-  Currently disabled for `redhat` family.
+  Currently disabled for `rhel` family.
   
   TODO: check the reason and other RHEL-based platforms.
 * <a id="issues-snapd"></a>`snapd` fails to work in `almalinux` (not sure about other `rhel`-likes) with error:
@@ -91,11 +95,16 @@ No guaranties at all. Roles are tested with:
   /tmp/syscheck-mountpoint-604945645: unknown filesystem type 'squashfs'.
   ```
 
-  Currently disabled for `redhat` family.
+  Currently disabled for `rhel` family.
+
+  Solution: can be [isntalled manually](https://www.jetbrains.com/phpstorm/download/#section=linux)
+* <a id="issues-phpstorm"></a>`phpstorm` fails to be installed in `almalinux` (not sure about other `rhel`-likes) due to dependency on `snap`
+
+  Currently disabled for `rhel` family.
+* <a id="issues-upgrade-nix"></a>`upgrade` for `nix` is very memory greedy. Works fine on 4GB+ RAM, fails with 2GB
 * ~~<a id="issues-tmuxp"></a>`tmuxp` fails to work in `almalinux`, can be [installed manually with pip](https://github.com/tmux-python/tmuxp#installation)~~
 
   (fixed with installation via pip)
-* <a id="issues-upgrade-nix"></a>`upgrade` for `nix` is very memory greedy. Works fine on 4GB+ RAM, fails with 2GB
 
 [To top]
 

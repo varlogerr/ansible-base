@@ -1,0 +1,7 @@
+---
+- name: Add repo
+  ansible.builtin.include_tasks: file=inc/install-{{ id_like }}.yml
+  vars:
+    id_like_options: ['debian']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(false, true) }}"
+  when: id_like

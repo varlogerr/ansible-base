@@ -1,0 +1,22 @@
+---
+- name: Virtualbox repo
+  block:
+    - name: Install GPG key
+      ansible.builtin.rpm_key: key="{{ item }}" state=present
+      loop: "{{ keys }}"
+
+    - name: Install repo
+      ansible.builtin.get_url:
+        url: https://download.virtualbox.org/virtualbox/rpm/el/virtualbox.repo
+        dest: /etc/yum.repos.d/virtualbox.repo
+        force: true
+        mode: 0644
+      register: repo_virtualbox_add_result
+  vars:
+    keys:
+      - https://www.virtualbox.org/download/oracle_vbox.asc
+  become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_virtualbox_state_changed: "{{ repo_virtualbox_add_result.changed }}"

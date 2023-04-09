@@ -15,7 +15,7 @@
       when: rage_installed_version.stdout.find(version) | int == -1
 
     - name: Deploy shell hook
-      ansible.builtin.include_role: name=partial-deploy-shell-hook
+      ansible.builtin.include_role: name=partial.deploy-shell-hook
       vars:
         shell_hook_dest_dir: "{{ install_dir }}"
         shell_hook_bin_dir: "{{ bin_dir }}"

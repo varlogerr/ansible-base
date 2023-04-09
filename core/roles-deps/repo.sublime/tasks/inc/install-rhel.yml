@@ -1,0 +1,22 @@
+---
+- name: Sublime repo
+  block:
+    - name: Install GPG key
+      ansible.builtin.rpm_key: key="{{ item }}" state=present
+      loop: "{{ keys }}"
+
+    - name: Install repo
+      ansible.builtin.get_url:
+        url: https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
+        dest: /etc/yum.repos.d/sublime.repo
+        force: true
+        mode: 0644
+      register: repo_sublime_add_result
+  vars:
+    keys:
+      - https://download.sublimetext.com/sublimehq-rpm-pub.gpg
+  become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_sublime_state_changed: "{{ repo_sublime_add_result.changed }}"

@@ -1,0 +1,7 @@
+---
+# # see readme for more demos
+# vscode_users_exts:
+# - users: "{{ factum.target_users.values() }}"
+#   exts:
+#   - editorconfig.editorconfig
+vscode_users_exts: []

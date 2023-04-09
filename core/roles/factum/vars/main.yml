@@ -36,3 +36,6 @@ factum:
   skel_user_obj: {}
   users: []
   users_obj: {}
+  book:
+    core_home: ""
+    proj_home: ""

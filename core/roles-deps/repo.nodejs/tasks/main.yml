@@ -1,0 +1,10 @@
+---
+# * https://deb.nodesource.com/setup_18.x
+# * https://rpm.nodesource.com/setup_18.x
+- name: Add repo
+  ansible.builtin.include_tasks: file=inc/install-{{ id_like }}.yml
+  vars:
+    id_like_options: ['rhel']
+    id_like: "{{ factum.distro.id_like | intersect(id_like_options) | first | default(false, true) }}"
+    version: "{{ nodejs_version | default(bookconf.versions.nodejs, true) }}"
+  when: id_like

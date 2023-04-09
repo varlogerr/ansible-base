@@ -1,0 +1,4 @@
+---
+snapd_vars:
+  id_unlike_options:
+    - rhel

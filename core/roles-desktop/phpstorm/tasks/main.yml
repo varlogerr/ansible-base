@@ -1,0 +1,6 @@
+---
+- name: Install
+  community.general.snap: name=phpstorm state=present classic=true
+  become: true
+  when:
+    - factum.distro.id_like | intersect(snapd_vars.id_unlike_options) | length < 1

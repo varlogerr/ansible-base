@@ -1,0 +1,6 @@
+---
+# # users to autostart deluge
+# deluge_autostarters: "{{ factum.target_users_obj.values() }}"
+# # or
+# deluge_autostarters: "{{ factum.target_users }}"
+deluge_autostarters: []

@@ -1,0 +1,22 @@
+---
+- name: VSCode repo
+  block:
+    - name: Install GPG key
+      ansible.builtin.rpm_key: key="{{ item }}" state=present
+      loop: "{{ keys }}"
+
+    - name: Install repo
+      ansible.builtin.copy:
+        url: vscode.repo
+        dest: /etc/yum.repos.d/vscode.repo
+        force: true
+        mode: 0644
+      register: repo_vscode_add_result
+  vars:
+    keys:
+      - https://packages.microsoft.com/keys/microsoft.asc
+  become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_vscode_state_changed: "{{ repo_vscode_add_result.changed }}"

@@ -1,6 +1,7 @@
 ---
 - name: Block
   block:
+    # fix https://linuxmint-user-guide.readthedocs.io/en/latest/snap.html
     - name: Allow install
       ansible.builtin.file: path="{{ nosnap_path }}" state=absent
       when: factum.distro.family == 'debian'
@@ -24,7 +25,6 @@
       ansible.builtin.meta: reset_connection
   vars:
     nosnap_path: path=/etc/apt/preferences.d/nosnap.pref
-    id_unlike_options: ['rhel']
   become: true
   when:
-    - factum.distro.id_like | intersect(id_unlike_options) | length < 1
+    - factum.distro.id_like | intersect(snapd_vars.id_unlike_options) | length < 1

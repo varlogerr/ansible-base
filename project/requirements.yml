@@ -3,14 +3,14 @@ collections:
   # required for firewalld, selinux, etc.
   # https://galaxy.ansible.com/ansible/posix
   - name: ansible.posix
-    version: 1.4.0
+    version: 1.5.2
   # https://galaxy.ansible.com/community/docker
   - name: community.docker
-    version: 2.6.0
+    version: 3.4.3
   # required for ufw
   # https://galaxy.ansible.com/community/general
   - name: community.general
     version: 6.5.0
   # https://galaxy.ansible.com/community/mysql
   - name: community.mysql
-    version: 3.3.0
+    version: 3.6.0

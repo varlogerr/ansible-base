@@ -1,0 +1,14 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    repo_dist_id: "{{ (factum.distro.id_like | intersect(['ubuntu']) | length > 0) | ternary('ubuntu', factum.distro.id) }}"
+    codename: "{{ (repo_dist_id in ['ubuntu']) | ternary(factum.distro.ubuntu_codename, factum.distro.codename) }}"
+    arch: "{{ factum.distro.arch }}"
+    # add_ppa vars
+    add_ppa_repo_name: docker
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://download.docker.com/linux/{{ repo_dist_id }}/gpg
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }} arch={{ arch }}] https://download.docker.com/linux/{{ repo_dist_id }} {{ codename }} stable

@@ -1,0 +1,20 @@
+---
+- name: Desktop app autostart
+  block:
+    - name: Create autostart directory
+      ansible.builtin.file:
+        path: "{{ autostart_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Deploy autostart file (file={{ filename }})
+      ansible.builtin.copy:
+        src: "{{ ansible_parent_role_paths | first }}/{{ desktop_app_autostart_file }}"
+        dest: "{{ autostart_dir }}/{{ filename }}"
+        mode: '0644'
+  vars:
+    user_obj: "{{ factum.users_obj[desktop_app_autostart_user] | default(desktop_app_autostart_user) }}"
+    autostart_dir: "{{ user_obj.home }}/.config/autostart"
+    filename: "{{ desktop_app_autostart_file | basename }}"
+  become: true
+  become_user: "{{ user_obj.name }}"

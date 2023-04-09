@@ -1,0 +1,14 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    arch: "{{ factum.distro.arch }}"
+    # add_ppa vars
+    add_ppa_repo_name: google-chrome
+    add_ppa_var_marker: google_chrome
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://dl-ssl.google.com/linux/linux_signing_key.pub
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }} arch={{ arch }}] https://dl.google.com/linux/chrome/deb/ stable main
+    add_ppa_once: true

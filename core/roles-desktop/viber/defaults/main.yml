@@ -1,0 +1,6 @@
+---
+# # users to autostart viber
+# viber_autostarters: "{{ factum.target_users_obj.values() }}"
+# # or
+# viber_autostarters: "{{ factum.target_users }}"
+viber_autostarters: []

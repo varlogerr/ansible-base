@@ -1,0 +1,9 @@
+---
+# installation from snaps is not recommended
+# https://docs.krita.org/en/user_manual/getting_started/installation.html#snaps
+- name: Install
+  community.general.flatpak:
+    remote: "{{ flathub_vars.remote }}"
+    name: org.kde.krita
+    state: present
+  become: true

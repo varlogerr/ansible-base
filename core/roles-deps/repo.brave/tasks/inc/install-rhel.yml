@@ -1,0 +1,22 @@
+---
+- name: Brave repo
+  block:
+    - name: Install GPG key
+      ansible.builtin.rpm_key: key="{{ item }}" state=present
+      loop: "{{ keys }}"
+
+    - name: Install repo
+      ansible.builtin.get_url:
+        url: https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+        dest: /etc/yum.repos.d/brave.repo
+        force: true
+        mode: 0644
+      register: repo_brave_add_result
+  vars:
+    keys:
+      - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+  become: true
+
+- name: Register installation result
+  ansible.builtin.set_fact:
+    repo_brave_state_changed: "{{ repo_brave_add_result.changed }}"

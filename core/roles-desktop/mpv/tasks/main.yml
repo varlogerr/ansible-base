@@ -1,0 +1,8 @@
+---
+- name: Install
+  ansible.builtin.package: name=mpv state=present
+  become: true
+
+- name: Configure
+  ansible.builtin.include_tasks: file=inc/configure.yml
+  when: mpv_conffile.src | default('', true)

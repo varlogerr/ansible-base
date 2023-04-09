@@ -1,0 +1,13 @@
+---
+- name: Add repo
+  ansible.builtin.include_role: name=partial.add-ppa
+  vars:
+    codename: "{{ factum.distro.ubuntu_codename }}"
+    # add_ppa vars
+    add_ppa_repo_name: git
+    add_ppa_keyring: /etc/apt/keyrings/{{ add_ppa_repo_name }}.gpg
+    add_ppa_keys:
+      - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xe1dd270288b4e6030699e45fa1715d88e1df1f24
+    add_ppa_repos:
+      - deb [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/git-core/ppa/ubuntu {{ codename }} main
+      - deb-src [signed-by={{ add_ppa_keyring }}] https://ppa.launchpadcontent.net/git-core/ppa/ubuntu {{ codename }} main

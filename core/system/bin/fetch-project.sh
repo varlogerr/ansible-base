@@ -182,14 +182,30 @@ _iife_roles_to_playbook() {
     | grep -v -e '^\s*$' -e '^\s*#' | text_clean
   )"
 
-  local roles; roles="$(
+  local roles_tmp; roles_tmp="$(
     set -o pipefail
 
     find "${roles_dirs_arr[@]}" \
       -type f -path '*/tasks/main.yml' 2>/dev/null \
-    | rev | cut -d'/' -f3 | rev \
-    | sort -n | uniq | grep -vFxf <(echo "${exclude_roles}") \
+    | rev | cut -d'/' -f3,4 | rev | sort -u -t '/' -k2 \
+    | LC_ALL=C sort -u -t '/' -k1
   )" || trap_fatal $? "Can't find roles"
+
+  local -A dir_to_roles_map
+  local k
+  local r; for r in ${roles_tmp}; do
+    k="${r%/*}"
+    dir_to_roles_map["${k}"]+="${dir_to_roles_map["${k}"]:+$'\n'}${r##*/}"
+  done
+
+  local roles; roles="$(
+    printf -- '%s\n' "${!dir_to_roles_map[@]}" \
+    | sort -n | while read -r k; do
+      echo "# { ${k}"
+      echo "${dir_to_roles_map["${k}"]}" | grep -vFxf <(echo "${exclude_roles}")
+      echo "# } ${k}"
+    done
+  )"
 
   [[ -n "${roles}" ]] || return
 
@@ -200,7 +216,7 @@ _iife_roles_to_playbook() {
     .
   " | log_info
 
-  sed 's/^/    # - /' <<< "${roles}" | (
+  sed -e 's/^\([^#]\)/    - \1/' -e 's/^\(#\)/  \1/' <<< "${roles}" | (
     set -x; tee -a "${PKG_TMPDIR}/project/playbook.yml" >/dev/null
   ) || trap_fatal $? "Can't add roles to the playbook"
 }; _iife_roles_to_playbook

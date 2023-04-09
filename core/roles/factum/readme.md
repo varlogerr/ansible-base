@@ -7,6 +7,7 @@
   * [Distro info](#factum-values-distro)
   * [Timezone info](#factum-values-timezone)
   * [Users info](#factum-values-users)
+  * [Playbook info](#factum-values-book)
 * [Usage demo](#usage-demo)
 
 ## Description
@@ -125,6 +126,26 @@ factum:
   # Format:
   #   username: user_object
   users_obj: {}
+  #
+  # ...
+  #
+```
+
+[To top]
+
+### <a id="factum-values-users"></a>Playbook info
+
+```yaml
+factum:
+  #
+  # ...
+  #
+  # Ansible control user name.
+  book:
+    # Core home directory
+    core_home: ""
+    # The current project home directory
+    proj_home: ""
   #
   # ...
   #

@@ -1,4 +1,4 @@
 ---
 dependencies:
-  - repo-ansible
-  - repo-epel
+  - repo.ansible
+  - repo.epel
