@@ -6,3 +6,22 @@
     repo_changed: "{{ (repo_vscode_state_changed | default(false)) }}"
     pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
   become: true
+
+- name: Install extensions
+  ansible.builtin.command:
+    cmd: "{{ vscode_bin | quote }} --install-extension {{ ext | quote }}"
+  register: vscode_extension_installation
+  changed_when: "'already installed' not in vscode_extension_installation.stdout"
+  become: true
+  become_user: "{{ owner.name }}"
+  vars:
+    vscode_bin: /usr/bin/code
+    user: "{{ (user_ext | first).owner }}"
+    owner: "{{ (user | type_debug == 'dict') | ternary(
+        user, factum.users_obj[user]
+      ) }}"
+    ext: "{{ user_ext | last }}"
+  loop: "{{ vscode_users_exts | subelements('exts') }}"
+  loop_control:
+    loop_var: user_ext
+    label: "{{ owner.name }} ({{ ext }})"

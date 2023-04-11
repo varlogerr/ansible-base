@@ -65,15 +65,14 @@ No guaranties at all. Roles are tested with:
 
 ## TBD
 
-* add users extraconf configuration to `git` role
-* create `git-ps1` role
-* implement `tpm` support for `tmux` role
-* create `tmux-user-config` role
-* create `tmuxp-user-config` role
 * validate desktop roles work in `rhel` and `debian`
-* add `max-watches` as a dependency to vscode
-* add `vscode-users-exts` functionality
 * ~~`upgrade` role doesn't support `brew`~~
+* ~~implement `tpm` support for `tmux` role~~
+* ~~create `tmuxp-user-config` role~~
+* ~~add users extraconf configuration to `git` role~~
+* ~~create `ps1` role~~
+* ~~add `vscode-users-exts` functionality~~
+* ~~add `fs-max-user-watches` as a dependency to vscode~~
 
 [To top]
 

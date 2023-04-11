@@ -133,7 +133,7 @@ factum:
 
 [To top]
 
-### <a id="factum-values-users"></a>Playbook info
+### <a id="factum-values-book"></a>Playbook info
 
 ```yaml
 factum:

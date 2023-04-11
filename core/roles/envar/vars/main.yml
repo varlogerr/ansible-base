@@ -1,3 +1,4 @@
 ---
 envar_vars:
   sys_initd: /etc/envar/init.d
+  user_initd_previx: .envar/init.d

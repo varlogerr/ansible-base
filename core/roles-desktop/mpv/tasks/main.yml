@@ -3,6 +3,12 @@
   ansible.builtin.package: name=mpv state=present
   become: true
 
-- name: Configure
-  ansible.builtin.include_tasks: file=inc/configure.yml
-  when: mpv_conffile.src | default('', true)
+- name: Deploy config
+  ansible.builtin.include_role: name=partial.copy-or-tpl
+  vars:
+    copy_or_tpl_src: "{{ mpv_conffile.src | default(mpv_conffile) }}"
+    copy_or_tpl_dest: /etc/mpv/mpv.conf
+    copy_or_tpl_vars: "{{ mpv_conffile.tpl_vars | default({}) }}"
+    copy_or_tpl_dir_mode: '0755'
+    copy_or_tpl_file_mode: '0644'
+  when: mpv_conffile | default('', true)

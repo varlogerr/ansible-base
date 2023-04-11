@@ -4,40 +4,41 @@
     - name: Install
       ansible.builtin.package: name=tmux state=present
 
+    - name: Install TPM
+      ansible.builtin.git:
+        repo: "{{ tpm_repo }}"
+        dest: "{{ tpm_home }}"
+        version: "{{ tpm_version }}"
+        force: true
+
     - name: Create default config directory
       ansible.builtin.file:
-        path: "{{ default_conf_path | dirname }}"
+        path: "{{ conf_dir }}"
         state: directory
         mode: '0755'
 
-    - name: Deploy default config
+    - name: Deploy default configs
       ansible.builtin.template:
-        src: default.conf
-        dest: "{{ default_conf_path }}"
+        src: "{{ item | basename }}"
+        dest: "{{ item }}"
         mode: '0644'
+      loop: "{{ conf_paths.values() }}"
 
-    - name: Create user configs
-      ansible.builtin.blockinfile:
-        path: "{{ conf_path }}"
-        block: |
-          source-file '{{ default_conf_path }}'
-          ## Demo source user local
-          # source-file '{{ user.home }}/.tmux/configs.conf'
-        marker: "{mark} Managed initial setup"
-        marker_begin: '# {'
-        marker_end: '# }'
-        create: true
-        owner: "{{ user.name }}"
-        group: "{{ user.group }}"
-        mode: '0600'
-        insertbefore: BOF
-      loop: "{{ users }}"
+    - name: User config
+      ansible.builtin.include_tasks: file=inc/user-conf.yml
       vars:
-        conf_path: "{{ user.home }}/.tmux.conf"
+        user_conf_path: "{{ user.home }}/.tmux.conf"
+      loop: "{{ users }}"
       loop_control:
         loop_var: user
-        label: "{{ conf_path }}"
+        label: "{{ user_conf_path }}"
   vars:
-    default_conf_path: /etc/tmux/default.conf
+    tpm_repo: https://github.com/tmux-plugins/tpm.git
+    tpm_home: /opt/tmux/tpm
+    tpm_version: "{{ tmux_tpm_version | default(bookconf.versions.tmux_tpm, true) }}"
+    conf_dir: /etc/tmux
+    conf_paths:
+      configs: "{{ conf_dir }}/configs.conf"
+      plugins: "{{ conf_dir }}/plugins.conf"
     users: "{{ (factum.users_obj.values() | list) + [factum.skel_user_obj] }}"
   become: true

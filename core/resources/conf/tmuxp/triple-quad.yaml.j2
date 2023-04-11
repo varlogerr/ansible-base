@@ -1,0 +1,23 @@
+---
+# https://tmuxp.git-pull.com/examples.html
+session_name: {{ tpl_vars.session_name | default('triple-quad') }}
+windows:
+  - window_name: {{ tpl_vars.window_name_triple | default('triple') }}
+    layout: main-horizontal
+    panes:
+        # fix https://github.com/tmux-python/tmuxp/issues/75
+      - shell_command:
+          - cd ~
+        focus: true
+      -
+      -
+  - window_name: {{ tpl_vars.window_name_quad | default('quad') }}
+    layout: tiled
+    panes:
+      # fix https://github.com/tmux-python/tmuxp/issues/75
+      - shell_command:
+          - cd ~
+        focus: true
+      -
+      -
+      -

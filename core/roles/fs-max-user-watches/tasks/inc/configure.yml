@@ -1,0 +1,14 @@
+---
+- name: Configure
+  block:
+    - name: Apply confd configuration
+      ansible.builtin.template:
+        src: max-user-watches.conf
+        dest: /etc/sysctl.d/30-max-user-watches.conf
+        mode: '0644'
+
+    # To apply settings from confd use `sysctl --system`, not `sysctl -p`
+    - name: Reload sysctl settings
+      ansible.builtin.command: sysctl --system
+      changed_when: true
+  become: true

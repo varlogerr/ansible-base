@@ -11,3 +11,23 @@
       when: factum.distro.id_like | intersect(pip_id_like_options) | length > 0
   vars:
     pip_id_like_options: ['rhel']
+
+- name: Deploy configs
+  ansible.builtin.include_role: name=partial.copy-or-tpl
+  vars:
+    owner: "{{ (owner_conf.owner | type_debug == 'dict') | ternary(
+        owner_conf.owner, factum.users_obj[owner_conf.owner]
+      ) }}"
+    # copy-or-tpl vars
+    copy_or_tpl_src: "{{ owner_conf.src }}"
+    copy_or_tpl_dest: "{{ owner.home }}/.tmuxp/{{ owner_conf.dest | default((
+      copy_or_tpl_src | splitext | last == '.j2') | ternary(
+        copy_or_tpl_src | splitext | first, copy_or_tpl_src
+      )) }}"
+    copy_or_tpl_owner: "{{ owner }}"
+    copy_or_tpl_vars: "{{ owner_conf.tpl_vars | default({}) }}"
+    copy_or_tpl_dir_mode: '0700'
+    copy_or_tpl_file_mode: '0600'
+  loop: "{{ tmuxp_users_confs | default([]) }}"
+  loop_control:
+    loop_var: owner_conf

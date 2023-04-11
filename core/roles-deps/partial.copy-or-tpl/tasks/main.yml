@@ -1,0 +1,33 @@
+---
+- name: Deploy file or template
+  block:
+    - name: Create directory ({{ dest_dir }})
+      ansible.builtin.file:
+        path: "{{ dest_dir }}"
+        state: directory
+        mode: "{{ copy_or_tpl_dir_mode | default(omit, true) }}"
+
+    - name: Deploy template ({{ copy_or_tpl_dest }})
+      ansible.builtin.template:
+        src: "{{ copy_or_tpl_src }}"
+        dest: "{{ copy_or_tpl_dest }}"
+        mode: "{{ copy_or_tpl_file_mode | default(omit, true) }}"
+      vars:
+        tpl_vars: "{{ copy_or_tpl_vars | default({}) }}"
+      when: module == 'template'
+
+    - name: Deploy file ({{ copy_or_tpl_dest }})
+      ansible.builtin.copy:
+        src: "{{ copy_or_tpl_src }}"
+        dest: "{{ copy_or_tpl_dest }}"
+        mode: "{{ copy_or_tpl_file_mode | default(omit, true) }}"
+      when: module == 'copy'
+  become: true
+  become_user: "{{ owner.name }}"
+  vars:
+    tmp_owner: "{{ copy_or_tpl_owner | default(factum.root_user_obj, true) }}"
+    owner: "{{ (tmp_owner | type_debug == 'dict') | ternary(
+        tmp_owner, factum.users_obj[tmp_owner]
+      ) }}"
+    dest_dir: "{{ copy_or_tpl_dest | dirname }}"
+    module: "{{ (copy_or_tpl_src | splitext | last == '.j2') | ternary('template', 'copy') }}"

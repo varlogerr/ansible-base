@@ -1,7 +1,7 @@
 ---
-# # see readme for more demos
-# vscode_users_exts:
-# - users: "{{ factum.target_users.values() }}"
-#   exts:
-#   - editorconfig.editorconfig
+# https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+# For better performance see also `fs-max-user-watches` role
+#
+# See readme.md for configuration demo
+# https://github.com/varlogerr/ansible-base/blob/master/tmux/core/roles-desktop/vscode/readme.md
 vscode_users_exts: []

@@ -18,10 +18,10 @@
       ansible.builtin.blockinfile:
         path: "{{ rc_path }}"
         block: |
-          . '{{ hook_path }}'
+          {{ block_spaces }}. '{{ hook_path }}'
         marker: "{mark} Managed envar setup"
-        marker_begin: '{ #'
-        marker_end: '} #'
+        marker_begin: '{ #####'
+        marker_end: '} #####'
         create: true
         owner: "{{ owner.name }}"
         group: "{{ owner.group }}"
@@ -34,6 +34,7 @@
         rc_map: "{{ item[1] }}"
         hook_path: "{{ install_dir }}/{{ rc_map.hook }}"
         rc_path: "{{ owner.home }}/{{ rc_map.rc }}"
+        block_spaces: '  '
       loop_control:
         label: "{{ rc_path }}"
   become: true

@@ -20,14 +20,14 @@ bookconf:
     fzf: '0.39.0'
     # https://github.com/gokcehan/lf/releases
     lf: r28
+    # https://github.com/tmux-plugins/tpm/tags
+    tmux_tpm: 'v3.1.0'
+    # https://nodejs.org/en/download/releases
+    nodejs: '18'
     # https://downloads.nomachine.com/download/?id=6
     nomachine: '8.4.2_1'
     # https://github.com/str4d/rage/releases
     rage: '0.9.1'
-    #
-    # https://nodejs.org/en/download/releases
-    nodejs: '18'
-    #
     ### TOOLBOX ###
     #
     # https://github.com/varlogerr/toolbox.envar2/tags

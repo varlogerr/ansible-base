@@ -7,14 +7,37 @@
     repo_changed: "{{ repo_git_state_changed | default(false) }}"
     pkg_state: "{{ repo_changed | ternary('latest', 'present') }}"
 
-# - include_tasks: inc/extraconf.yml
-#   vars:
-#     user: "{{ conf_item.user }}"
-#     src: "{{ conf_item.src }}"
-#     dest: "{{ user.home }}/.gitconfig-extra"
-#     tpl_var: "{{ conf_item.tpl_var | default({}) }}"
-#     src_extension: "{{ conf_item.src | splitext | last }}"
-#   loop: "{{ git_tool_extraconf_users }}"
-#   loop_control:
-#     loop_var: conf_item
-#     label: "{{ user.realname }}"
+- name: Deploy extraconf
+  ansible.builtin.include_role: name=partial.copy-or-tpl
+  vars:
+    owner: "{{ (user_conf.owner | type_debug == 'dict') | ternary(
+        user_conf.owner, factum.users_obj[user_conf.owner]
+      ) }}"
+    # copy-or-tpl vars
+    copy_or_tpl_src: "{{ user_conf.src }}"
+    copy_or_tpl_dest: "{{ owner.home }}/.gitconfig-extra"
+    copy_or_tpl_owner: "{{ owner }}"
+    copy_or_tpl_vars: "{{ user_conf.tpl_vars }}"
+    copy_or_tpl_file_mode: '0644'
+  loop: "{{ git_users_extraconfs | default([], true) }}"
+  loop_control:
+    loop_var: user_conf
+
+- name: Add extraconf to the main conf
+  ansible.builtin.ini_file:
+    path: "{{ owner.home }}/.gitconfig"
+    section: include
+    option: path
+    value: "{{ owner.home }}/.gitconfig-extra"
+    mode: 0600
+    create: true
+  become: true
+  become_user: "{{ owner.name }}"
+  vars:
+    owner: "{{ (user_conf.owner | type_debug == 'dict') | ternary(
+        user_conf.owner, factum.users_obj[user_conf.owner]
+      ) }}"
+  loop: "{{ git_users_extraconfs | default([], true) }}"
+  loop_control:
+    loop_var: user_conf
+    label: "{{ owner.name }}"

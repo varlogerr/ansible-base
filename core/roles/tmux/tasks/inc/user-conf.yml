@@ -1,0 +1,53 @@
+---
+- name: User config
+  block:
+    - name: Create user config head
+      ansible.builtin.blockinfile:
+        path: "{{ user_conf_path }}"
+        block: |
+          {{ block_spaces }}source-file '{{ conf_paths.configs }}'
+
+          {{ block_spaces }}## Demo source user local
+          {{ block_spaces }}#   source-file '{{ user.home }}/.tmux/configs.conf'
+        marker: "{mark} Managed initial setup"
+        marker_begin: "{{ marker_begin }}"
+        marker_end: "{{ marker_end}}"
+        create: true
+        mode: "{{ file_mode }}"
+        insertbefore: BOF
+
+    - name: Create user config tail
+      ansible.builtin.blockinfile:
+        path: "{{ user_conf_path }}"
+        block: |
+          {{ block_spaces }}# All plulgins installations must preseed this block.
+          {{ block_spaces }}# Demo:
+          {{ block_spaces }}#   set -g @plugin 'tmux-plugins/tmux-resurrect'
+          {{ block_spaces }}# Or create a file with plugins installations and source it with
+          {{ block_spaces }}#   source-file '{{ user.home }}/.tmux/plugins.conf'
+          {{ block_spaces }}# Then prefix + I for install and prefix + U for update
+
+          {{ block_spaces }}source-file '{{ conf_paths.plugins }}'
+        marker: "{mark} Managed plugins setup"
+        marker_begin: "{{ marker_begin }}"
+        marker_end: "{{ marker_end}}"
+        create: true
+        mode: "{{ file_mode }}"
+        insertafter: EOF
+
+    - name: Install plugins
+      ansible.builtin.command: "{{ tpm_home }}/scripts/install_plugins.sh"
+      register: tmux_plugins_install_state
+      changed_when:
+        - "'installing' in (tmux_plugins_install_state.stdout | lower)"
+        - "'download success' in (tmux_plugins_install_state.stdout | lower)"
+      failed_when:
+        - tmux_plugins_install_state.rc > 0
+        - "'plugin manager not configured' not in (tmux_plugins_install_state.stderr | lower)"
+  vars:
+    marker_begin: '##### {'
+    marker_end: '##### }'
+    block_spaces: '  '
+    file_mode: '0600'
+  become: true
+  become_user: "{{ user.name }}"

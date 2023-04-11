@@ -1,0 +1,13 @@
+---
+- name: Deploy hook
+  ansible.builtin.include_role: name=partial.copy-or-tpl
+  vars:
+    src: "{{ ps1_src.src | default(ps1_src) }}"
+    # copy-or-tpl vars
+    copy_or_tpl_src: "{{ src }}"
+    copy_or_tpl_dest: "{{ envar_vars.sys_initd }}/{{
+        bookconf.priority.ps1 | default(bookconf.priority._default, true)
+      }}-ps1.sh"
+    copy_or_tpl_vars: "{{ ps1_src.tpl_vars | default({}) }}"
+    copy_or_tpl_file_mode: '0644'
+  when: ps1_src | default('')

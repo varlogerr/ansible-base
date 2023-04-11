@@ -1,0 +1,13 @@
+---
+# https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+
+- name: Detect current value
+  ansible.builtin.slurp:
+    path: /proc/sys/fs/inotify/max_user_watches
+  register: fs_max_user_watches_current
+
+- name: Configure
+  ansible.builtin.include_tasks: file=inc/configure.yml
+  when:
+    - fs_max_user_watches_value | default('')
+    - (fs_max_user_watches_current.content | b64decode | trim | int) != (fs_max_user_watches_value | int)

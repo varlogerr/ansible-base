@@ -24,12 +24,14 @@
           ansible.builtin.blockinfile:
             path: "{{ owner.home }}/.profile"
             block: |
-              eval $('{{ bin_dir }}/brew' shellenv)
+              {{ block_spaces }} eval $('{{ bin_dir }}/brew' shellenv)
             marker: "{mark} Managed brew setup"
-            marker_begin: '{ #'
-            marker_end: '} #'
+            marker_begin: '{ #####'
+            marker_end: '} #####'
             create: true
             mode: '0644'
+          vars:
+            block_spaces: '  '
 
         - name: Deploy hooks
           ansible.builtin.template:

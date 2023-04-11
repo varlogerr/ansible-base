@@ -201,9 +201,9 @@ _iife_roles_to_playbook() {
   local roles; roles="$(
     printf -- '%s\n' "${!dir_to_roles_map[@]}" \
     | sort -n | while read -r k; do
-      echo "# { ${k}"
+      echo "### { ${k}"
       echo "${dir_to_roles_map["${k}"]}" | grep -vFxf <(echo "${exclude_roles}")
-      echo "# } ${k}"
+      echo "### } ${k}"
     done
   )"
 
