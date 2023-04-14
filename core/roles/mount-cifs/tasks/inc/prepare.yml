@@ -1,0 +1,42 @@
+---
+- name: Credentials file
+  block:
+    - name: Create credentials directory
+      ansible.builtin.file:
+        path: "{{ cred_file | dirname }}"
+        state: directory
+        mode: '0700'
+
+    - name: Create credentials file
+      ansible.builtin.copy:
+        content: |
+          username={{ mount.username }}
+          password={{ mount.password }}
+        dest: "{{ cred_file }}"
+        mode: '0400'
+  become: true
+
+- name: Configure mounts
+  ansible.builtin.set_fact:
+    mount_cifs_mounts_tmp: "{{ (mount_cifs_mounts_tmp | default([])) + [{
+        'fs': mount.fs,
+        'mp': mount.mp,
+        'mp_owner': owner,
+        'mp_mode': mount.mp_mode | default(''),
+        'type': 'cifs',
+        'options': ([
+          '_netdev',
+          'credentials=' + cred_file,
+          'iocharset=utf8',
+          'nofail',
+          'uid=' + (owner.uid | string),
+          'gid=' + (owner.gid | string),
+          'x-systemd.automount',
+          'x-systemd.device-timeout=3s',
+        ] + (mount.options | default([], true))) | join(','),
+      }] }}"
+  vars:
+    user: "{{ mount.mp_owner | default(factum.root_user_obj, true) }}"
+    owner: "{{ (user | type_debug == 'dict') | ternary(
+        user, factum.users_obj[user]
+      ) }}"

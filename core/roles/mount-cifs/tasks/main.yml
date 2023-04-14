@@ -1,0 +1,22 @@
+---
+- ansible.builtin.include_tasks: file=inc/prepare.yml
+  loop: "{{ mount_cifs_mounts | default([]) }}"
+  loop_control:
+    loop_var: mount
+    label: "{{ mount.mp }}"
+  vars:
+    host: "{{ (mount.fs | split('/'))[2] }}"
+    cred_file: /root/.creds/cifs/{{ host }}-{{ mount.username }}.cred
+
+- name: Block
+  block:
+    - name: Install cifs utils
+      ansible.builtin.package: name=cifs-utils state=present
+
+    - name: Mount FS
+      ansible.builtin.include_role: name=partial.mount-fs
+      vars:
+        mount_fs_marker: 'cifs'
+  vars:
+    mount_fs_mounts: "{{ mount_cifs_mounts_tmp | default([]) }}"
+  when: mount_fs_mounts | length > 0

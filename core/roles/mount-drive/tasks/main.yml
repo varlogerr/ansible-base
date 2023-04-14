@@ -1,0 +1,27 @@
+---
+- name: Configure mounts
+  ansible.builtin.set_fact:
+    mount_drive_mounts_tmp: "{{ (mount_drive_mounts_tmp | default([])) + [{
+        'fs': item.fs,
+        'mp': item.mp,
+        'mp_owner': item.mp_owner | default(''),
+        'mp_mode': item.mp_mode | default(''),
+        'type': item.type | default(''),
+        'options': ([
+            'auto',
+            'nodev',
+            'nofail',
+            'nosuid',
+          ] + (item.options | default([], true))) | join(','),
+      }] }}"
+  loop: "{{ mount_drive_mounts | default([]) }}"
+  loop_control:
+    label: "{{ item.mp }}"
+
+# Comes with predefined `dump` and `pass` set to 0
+- name: Mount FS
+  ansible.builtin.include_role: name=partial.mount-fs
+  vars:
+    mount_fs_mounts: "{{ mount_drive_mounts_tmp | default([]) }}"
+    mount_fs_marker: 'drive'
+  when: mount_fs_mounts | length > 0

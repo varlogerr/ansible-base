@@ -1,0 +1,68 @@
+---
+- name: Reset state
+  ansible.builtin.set_fact: mount_fs_entries="{{ [] }}"
+
+- name: Create mounts
+  block:
+    - name: Create entries
+      ansible.builtin.set_fact:
+        mount_fs_entries: "{{ mount_fs_entries + [mount_string] }}"
+      loop: "{{ mount_fs_mounts | default([], true) }}"
+      vars:
+        fstype: "{{ mount.type | default(defaults.fs, true) }}"
+        mount_string: "{{
+            mount.fs + ' ' +  mount.mp + ' ' +  fstype + ' ' \
+            + mount.options + ' ' + defaults.dump + ' ' + defaults.passno
+          }}"
+      loop_control:
+        loop_var: mount
+        label: "{{ mount_string }}"
+
+    - name: Create directories
+      ansible.builtin.file:
+        path: "{{ mount.mp }}"
+        state: directory
+        mode: "{{ mount.mp_mode | default(omit, true) }}"
+        owner: "{{ owner.name }}"
+        group: "{{ owner.group }}"
+      loop: "{{ mount_fs_mounts | default([], true) }}"
+      vars:
+        user: "{{ mount.mp_owner | default(factum.root_user_obj, true) }}"
+        owner: "{{ (user | type_debug == 'dict') | ternary(
+            user, factum.users_obj[user]
+          ) }}"
+      loop_control:
+        loop_var: mount
+        label: "{{ mount.mp }}"
+
+    - name: Place entries to fstab
+      ansible.builtin.blockinfile:
+        path: /etc/fstab
+        marker: "{mark} Managed {{ mount_fs_marker }} #####"
+        mode: "{{ omit }}"
+        block: "{{ mount_fs_entries | join('\n') }}"
+        marker_begin: "##### {"
+        marker_end: "##### }"
+        create: true
+      register: mount_fs_fstab
+      when: mount_fs_entries | default([]) | length > 0
+
+    - name: Mount all
+      ansible.posix.mount:
+        path: "{{ mount.mp }}"
+        src: "{{ mount.fs }}"
+        fstype: "{{ mount.type | default(defaults.fs, true) }}"
+        opts: "{{ mount.options }}"
+        state: mounted
+        dump: "{{ defaults.dump }}"
+        passno: "{{ defaults.passno }}"
+      loop: "{{ mount_fs_mounts | default([], true) }}"
+      loop_control:
+        loop_var: mount
+        label: "{{ mount.mp }}"
+  vars:
+    defaults:
+      fs: 'ext4'
+      dump: '0'
+      passno: '0'
+  become: true
