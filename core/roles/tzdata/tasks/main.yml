@@ -1,0 +1,9 @@
+---
+- block:
+  - name: Install
+    ansible.builtin.package: name=tzdata state=present
+
+  - name: Set timezone
+    ansible.builtin.timezone: name={{ tzdata_tz }}
+    when: tzdata_tz | default('')
+  become: true
