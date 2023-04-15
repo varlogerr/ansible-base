@@ -1,6 +1,3 @@
 ---
-# # users to autostart teams
-# teams_autostarters: "{{ factum.target_users_obj.values() }}"
-# # or
-# teams_autostarters: "{{ factum.target_users }}"
+# !snippet.autostarters teams
 teams_autostarters: []

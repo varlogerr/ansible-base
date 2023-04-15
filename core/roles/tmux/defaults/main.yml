@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf.
-# Available versions: https://github.com/tmux-plugins/tpm/tags
+# !snippet.optional-version tmux_tpm_version https://github.com/tmux-plugins/tpm/tags
 tmux_tpm_version:

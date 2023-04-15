@@ -3,6 +3,7 @@
 * [Main](../../readme.md)
 ---
 * [Description](#description)
+* [Configuration sample](#configuration-sample)
 * [Factum values](#factum-values)
   * [Distro info](#factum-values-distro)
   * [Timezone info](#factum-values-timezone)
@@ -21,6 +22,28 @@ For some roles `factum` role comes as a prerequisite. It's not included as depen
       ansible.builtin.include_role: {name: factum, apply: {tags: [always]}}
       tags: [always]
   # ...
+```
+
+[To top]
+
+## Configuration sample
+
+```yaml
+# Extend default maps
+factum_map:
+  ubuntu_codename_to_version:
+    jammy: '22.04'
+  codename_to_ubuntu_codename:
+    # map debian codename to ubuntu codename
+    buster: bionic
+  archmap:
+    # map distro architecture Intel to AMD notation
+    x86_64: amd64
+# The users playbooks play for.
+factum_target_users:
+  - "{{ ansible_env.LOGNAME }}"
+  - user1
+factum_tz: EET
 ```
 
 [To top]

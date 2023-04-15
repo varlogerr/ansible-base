@@ -1,4 +1,2 @@
----
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/FiloSottile/age/releases
+# !snippet.optional-version-noprefix age_version https://github.com/FiloSottile/age/releases
 age_version:

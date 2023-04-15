@@ -1,0 +1,3 @@
+# `{{ 0 }}` is optional, defaults to the value from bookconf.
+# Available versions:
+#   {{ 1 }}

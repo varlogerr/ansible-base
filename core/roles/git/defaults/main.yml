@@ -1,4 +1,3 @@
 ---
-# See readme.md for configuration demo
-# https://github.com/varlogerr/ansible-base/blob/master/core/roles/git/readme.md
+# !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/core/roles/git/readme.md
 git_extraconf_users: []

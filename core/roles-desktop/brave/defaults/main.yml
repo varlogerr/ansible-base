@@ -1,6 +1,3 @@
 ---
-# # users to autostart brave
-# brave_autostarters: "{{ factum.target_users_obj.values() }}"
-# # or
-# brave_autostarters: "{{ factum.target_users }}"
+# !snippet.autostarters brave
 brave_autostarters: []

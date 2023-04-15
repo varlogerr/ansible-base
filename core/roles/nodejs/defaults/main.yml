@@ -1,5 +1,4 @@
 ---
-# Optional, defaults to the value from bookconf.
+# !snippet.optional-version nodejs_version https://nodejs.org/en/download/releases
 # Only major version segment
-# Available versions: https://nodejs.org/en/download/releases
 nodejs_version:

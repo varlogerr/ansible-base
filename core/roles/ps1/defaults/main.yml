@@ -1,6 +1,5 @@
 ---
 # Leave blank to skip
 #
-# See readme.md for configuration demo
-# https://github.com/varlogerr/ansible-base/blob/master/tmux/core/roles/ps1/readme.md
+# !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/core/roles/ps1/readme.md
 ps1_src:

@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/direnv/direnv/releases
+# !snippet.optional-version-noprefix direnv_version https://github.com/direnv/direnv/releases
 direnv_version:

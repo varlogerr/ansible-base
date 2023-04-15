@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/junegunn/fzf/releases
+# !snippet.optional-version-noprefix fzf_version https://github.com/junegunn/fzf/releases
 fzf_version:

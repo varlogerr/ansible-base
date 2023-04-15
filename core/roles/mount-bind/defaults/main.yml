@@ -1,4 +1,3 @@
 ---
-# See readme.md for configuration demo
-# https://github.com/varlogerr/ansible-base/blob/master/core/roles/mount-bind/readme.md
+# !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/core/roles/mount-bind/readme.md
 mount_bind_mounts: []

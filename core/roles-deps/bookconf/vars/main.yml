@@ -12,7 +12,7 @@ bookconf:
     age: '1.1.1'
     # https://github.com/asdf-vm/asdf/releases
     asdf: 'v0.11.3'
-    # Available versions: https://github.com/jamesob/desk/releases
+    # https://github.com/jamesob/desk/releases
     desk: '0.6.0'
     # https://github.com/direnv/direnv/releases
     direnv: '2.32.2'

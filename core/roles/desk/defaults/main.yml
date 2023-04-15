@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/jamesob/desk/releases
+# !snippet.optional-version-noprefix desk_version https://github.com/jamesob/desk/releases
 desk_version:

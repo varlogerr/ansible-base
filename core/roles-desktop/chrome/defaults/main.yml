@@ -1,6 +1,3 @@
 ---
-# # users to autostart chrome
-# chrome_autostarters: "{{ factum.target_users_obj.values() }}"
-# # or
-# chrome_autostarters: "{{ factum.target_users }}"
+# !snippet.autostarters chrome
 chrome_autostarters: []

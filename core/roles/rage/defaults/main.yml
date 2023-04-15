@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/str4d/rage/releases
+# !snippet.optional-version-noprefix rage_version https://github.com/str4d/rage/releases
 rage_version:

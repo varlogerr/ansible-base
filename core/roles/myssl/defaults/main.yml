@@ -1,4 +1,3 @@
 ---
-# Optional, defaults to the value from bookconf. Don't prefix with 'v'
-# Available versions: https://github.com/varlogerr/toolbox.myssl/tags
+# !snippet.optional-version myssl_version https://github.com/varlogerr/toolbox.myssl/tags
 myssl_version:

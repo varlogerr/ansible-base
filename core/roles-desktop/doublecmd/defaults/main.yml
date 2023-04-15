@@ -1,8 +1,5 @@
 ---
-# doublecmd_framework: gtk # gtk for gnome-based, qt for kde
-# # users to autostart copyq
-# doublecmd_autostarters: "{{ factum.target_users_obj.values() }}"
-# # or
-# doublecmd_autostarters: "{{ factum.target_users }}"
+# `doublecmd_framework` - 'gtk' for gnome-based, 'qt' for kde
+# !snippet.autostarters doublecmd
 doublecmd_framework: gtk
 doublecmd_autostarters: []

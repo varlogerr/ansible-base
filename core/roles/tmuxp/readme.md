@@ -1,6 +1,13 @@
 # <a id="top"></a>Tmuxp
 
+* [Links](#links)
 * [Configuration sample](#configuration-sample)
+
+## Links
+
+* https://tmuxp.git-pull.com/configuration/examples.html
+* https://leanpub.com/the-tao-of-tmux/read#window-layouts
+
 
 ## Configuration sample
 
