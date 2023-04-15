@@ -2,7 +2,7 @@
 - name: Playbook
   # `ansible_playbook_hosts` can be configured under `vars` section in the inventory file
   # or with `ansible-playbook ... -e 'ansible_playbook_hosts=VALUE' ... `
-  hosts: "{{ ansible_playbook_hosts | default('all', true) }}"
+  hosts: "{{ lookup('env', 'ANSIBLE_PLAYBOOK_HOSTS') | default('all', true) }}"
   # Can be set to 'free'
   # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_strategies.html#selecting-a-strategy
   strategy: "{{ lookup('env', 'ANSIBLE_PLAYBOOK_STRATEGY') | default(omit, true) }}"

@@ -33,7 +33,7 @@ git_users_extraconfs: '{{
       {
         factum.ctl_user: factum.ctl_user_obj,
       } | dict2items(key_name="src", value_name="owner") | map("combine", {
-        "src": factum.book.core_home + "/resources/conf/tmuxp/2x-triple.yaml.j2",
+        "src": factum.book.core_home + "/resources/conf/git/extra.ini.j2",
         "tpl_vars": {
           "git_user_name": factum.ctl_user,
           "git_user_email": factum.ctl_user + "@gmail.com",

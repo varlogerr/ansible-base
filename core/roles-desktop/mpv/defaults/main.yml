@@ -1,5 +1,5 @@
 ---
 # !snippet.blank-to-skip mpv_conffile
 #
-# !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/tmux/core/roles-desktop/mpv/readme.md
+# !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/core/roles-desktop/mpv/readme.md
 mpv_conffile:

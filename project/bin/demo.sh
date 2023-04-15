@@ -9,7 +9,7 @@
 { # Define variables required by bootstrap.sh
   PROJ_HOME="${PROJ_HOME-$(realpath -- "$(dirname -- "${0}")/.." 2>/dev/null)}" || {
     echo "[fatal] Can't detect PROJ_HOME" >&2
-    exit
+    exit 1
   }
   CORE_HOME="${CORE_HOME-$(cd "${PROJ_HOME}" 2>/dev/null && realpath -- "$(
     set -o pipefail
@@ -17,7 +17,7 @@
     | head -n 1 | cut -d= -f2- | sed -e 's/^\s*//' -e 's/\s*$//'
   )" 2>/dev/null)}" || {
     echo "[fatal] Can't detect core_home in ${PROJ_HOME}/project.conf" >&2
-    exit
+    exit 1
   }
   declare -r CORE_HOME PROJ_HOME
 }
