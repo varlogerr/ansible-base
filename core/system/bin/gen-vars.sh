@@ -2,6 +2,7 @@
 
 declare -A OPTS
 declare -Ar DEFAULTS=(
+  [all_roles]=false
   [branch]=master
   [spaced]=false
   [dest]=
@@ -25,9 +26,10 @@ print_help() {
     Generate vars from all available roles for the DEST project to stdout
    .
     USAGE:
-   .  ${script_name} [-b|--branch BRANCH] [--spaced] [--] DEST
+   .  ${script_name} [-b|--branch BRANCH] [--all-roles] [--spaced] [--] DEST
    .
     OPTIONS:
+    --all-roles   Bring all roles, even those that don't have defaults
     -b, --branch  Branch to pull from, defaults to ${DEFAULTS[branch]}
     --spaced      Prefix default vars content with 2 spaces
   "
@@ -45,6 +47,7 @@ _iife_parse_opts() {
     case "${arg}" in
       --            ) endopts=true ;;
       -\?|-h|--help ) print_help; exit ;;
+      --all-roles   ) OPTS[all_roles]=true ;;
       -b|--branch   ) shift; OPTS[branch]="${1}" ;;
       --spaced      ) OPTS[spaced]=true ;;
       *             ) OPTS[dest]="${1}" ;;
@@ -152,10 +155,11 @@ _iife_roles_vars() {
   local roles_tmp; roles_tmp="$(
     set -o pipefail
 
-    find "${roles_dirs_arr[@]}" \
-      -type f -path '*/tasks/main.yml' 2>/dev/null \
-    | rev | cut -d'/' -f3- | rev | sort -u -t '/' -k2 \
-    | LC_ALL=C sort -u -t '/' -k1
+  find "${roles_dirs_arr[@]}" \
+    -type f -path '*/tasks/main.yml' 2>/dev/null \
+    | rev | cut -d'/' -f3- | rev \
+    | cat -n | rev | sort -u -t'/' -k1,1 | rev \
+    | sort -nk1,1 | cut -f2- | LC_ALL=C sort -n
   )" || trap_fatal $? "Can't find roles"
 
   local -A vars_by_roles_dir
@@ -171,17 +175,17 @@ _iife_roles_vars() {
       cat "${defaults_file}" 2>/dev/null \
       | text_rmblank | sed '1{/^---$/d}' \
       | sed 's/^\s*#/#/'
-    )" || continue
-    [[ -n "${content}" ]] || continue
+    )"
+    [[ -z "${content}" ]] && ! ${OPTS[all_roles]} && continue
 
     content="$(parse_snippet "${content}")"
-    ${OPTS[spaced]} && content="$(
+    ${OPTS[spaced]} && ! $[OPTS[all_roles]] && content="$(
       sed 's/^/  /' <<< "${content}"
     )"
 
     roles_dir="$(rev <<< "${d}" | cut -d'/' -f2 | rev)"
     role_name="${d##*/}"
-    content="##### ${role_name^^}"$'\n'"${content}"
+    content="##### ${role_name^^}${content:+$'\n'}${content}"
 
     vars_by_roles_dir["${roles_dir}"]+="${vars_by_roles_dir[${roles_dir}]:+$'\n\n'}${content}"
   done
