@@ -1,11 +1,10 @@
 ---
-# When `factum_tz` left blank falls back to the current system
-# timezone and then to 'UTC'.
-#
 # !snippet.see-readme https://github.com/varlogerr/ansible-base/blob/master/core/roles/factum/readme.md
 factum_map:
   ubuntu_codename_to_version: {}
   codename_to_ubuntu_codename: {}
   archmap: {}
+# When left blank falls back to the current system timezone and
+# if not detected to 'UTC'.
 factum_tz:
 factum_target_users: []

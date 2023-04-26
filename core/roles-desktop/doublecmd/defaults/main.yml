@@ -1,5 +1,5 @@
 ---
 # `doublecmd_framework` - 'gtk' for gnome-based, 'qt' for kde
-# !snippet.autostarters doublecmd
 doublecmd_framework: gtk
+# !snippet.autostarters doublecmd
 doublecmd_autostarters: []
