@@ -1,4 +1,5 @@
 ---
 snapd_vars:
+  # required for tasks that depend on the current one
   id_unlike_options:
     - rhel

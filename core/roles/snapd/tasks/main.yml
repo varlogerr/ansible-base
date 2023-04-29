@@ -24,7 +24,7 @@
     - name: Reset connection
       ansible.builtin.meta: reset_connection
   vars:
-    nosnap_path: path=/etc/apt/preferences.d/nosnap.pref
+    nosnap_path: /etc/apt/preferences.d/nosnap.pref
   become: true
   when:
     - factum.distro.id_like | intersect(snapd_vars.id_unlike_options) | length < 1
