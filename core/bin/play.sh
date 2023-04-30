@@ -12,6 +12,28 @@ cd "${PROJ_HOME}" 2>/dev/null || trap_fatal --decore $? "
  .  ${PROJ_HOME}
 "
 
+print_help() {
+  local script_name="$(basename -- "${0}")"
+
+  text_decore "
+    Wrapper for ansible-playbook.
+   .
+    USAGE:
+   .  ${script_name}
+   .
+  ansible-playbook help follows
+ .
+  =========================
+ .
+  "
+}
+
+trap_help_opt "${@}" && {
+  print_help
+  ansible-playbook "${@}"
+  exit $?
+}
+
 VAULT_PASS_FILE_STATE=unreadable
 VAULT_PASS_SET_STATE=unset
 VAULT_PASS_FILE_CONTENT="$(cat "${ANSIBLE_PLAYBOOK_VAULT_PASS_FILE}" 2>/dev/null)" \
